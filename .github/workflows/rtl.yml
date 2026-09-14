@@ -44,3 +44,10 @@ jobs:
           rtl/amcore_68k_baseline.sv
           sim/tb_m1_3_exception.sv
           && vvp /tmp/amcore-m1-3.vvp
+      - name: Compile and run M1.4 interrupts
+        run: >-
+          iverilog -g2012 -s tb_m1_4_interrupts
+          -o /tmp/amcore-m1-4.vvp
+          rtl/amcore_68k_baseline.sv
+          sim/tb_m1_4_interrupts.sv
+          && vvp /tmp/amcore-m1-4.vvp
