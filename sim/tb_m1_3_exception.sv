@@ -16,7 +16,7 @@ module tb_m1_3_exception;
     always #5 clk = ~clk;
 
     amcore_68k_baseline dut (
-        .clk(clk), .reset_n(reset_n), .address(address), .data_out(data_out),
+        .clk(clk), .reset_n(reset_n), .irq_level(3'd0), .address(address), .data_out(data_out),
         .data_in(data_in), .read(read), .write(write), .ack(ack),
         .d0(d0), .pc(pc), .a7(a7), .sr(sr), .halted(halted),
         .exception(exception), .exception_vector(exception_vector)
@@ -36,22 +36,15 @@ module tb_m1_3_exception;
         integer i;
         for (i = 0; i < 512; i = i + 1)
             mem[i] = 16'h4E71;
-
-        // Reset SSP=0x100, PC=0x20.
         mem[0] = 16'h0000;
         mem[1] = 16'h0100;
         mem[2] = 16'h0000;
         mem[3] = 16'h0020;
-
-        // Vector 4 at 0x10 -> handler 0x40.
         mem[8] = 16'h0000;
         mem[9] = 16'h0040;
-
-        mem[16] = 16'hFFFF; // illegal instruction at 0x20
-        mem[32] = 16'h4E71; // handler NOP at 0x40
-
+        mem[16] = 16'hFFFF;
+        mem[32] = 16'h4E71;
         #20 reset_n = 1;
-
         wait (pc == 32'h00000040);
         #1;
         if (a7 !== 32'h000000FA) $fatal(1, "wrong exception SP: %h", a7);
@@ -62,7 +55,6 @@ module tb_m1_3_exception;
         if (halted) $fatal(1, "core halted during exception entry");
         if (exception) $fatal(1, "exception flag not cleared after vector fetch");
         if (exception_vector !== 8'd4) $fatal(1, "wrong exception vector");
-
         $display("PASS: M1.3 reset SSP/PC + vector 4 stack frame + handler fetch");
         $finish;
     end
