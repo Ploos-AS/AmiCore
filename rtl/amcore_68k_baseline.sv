@@ -1,7 +1,8 @@
-// AmiCore M1.7 — minimal clean-room 68000 execution baseline.
-// Supported instructions include NOP, MOVEQ Dn, BRA.s, ADDQ.L/SUBQ.L/CLR.L Dn,
-// register-direct MOVE.L/MOVEA.L, MOVE.L via (An)/(An)+/-(An), MOVE #imm,SR and RTE.
-// M1.7 adds the first data-memory addressing modes for 32-bit MOVE transfers.
+// AmiCore M1.8 — minimal clean-room 68000 execution baseline.
+// Supported instructions include NOP, MOVEQ Dn, BRA.s/BRA.w, BSR.s/BSR.w, RTS,
+// ADDQ.L/SUBQ.L/CLR.L Dn, register-direct MOVE.L/MOVEA.L,
+// MOVE.L via (An)/(An)+/-(An), MOVE #imm,SR and RTE.
+// M1.8 adds subroutine control flow and 16-bit branch displacement support.
 
 module amcore_68k_baseline (
     input  logic        clk,
@@ -24,7 +25,8 @@ module amcore_68k_baseline (
 
     typedef enum logic [4:0] {
         S_RESET_SSP_HI, S_RESET_SSP_LO, S_RESET_PC_HI, S_RESET_PC_LO,
-        S_FETCH, S_EXEC, S_IMM_SR,
+        S_FETCH, S_EXEC, S_IMM_SR, S_BRANCH_EXT,
+        S_BSR_PUSH_LO, S_BSR_PUSH_HI, S_RTS_POP_HI, S_RTS_POP_LO,
         S_EXC_PUSH_PC_LO, S_EXC_PUSH_PC_HI, S_EXC_PUSH_SR,
         S_EXC_VEC_HI, S_EXC_VEC_LO,
         S_RTE_POP_SR, S_RTE_POP_PC_HI, S_RTE_POP_PC_LO,
@@ -35,7 +37,7 @@ module amcore_68k_baseline (
     state_t state;
     logic [31:0] dreg [0:7];
     logic [31:0] areg [0:7];
-    logic [15:0] ir, reset_hi, vector_hi, rte_pc_hi;
+    logic [15:0] ir, reset_hi, vector_hi, rte_pc_hi, rts_pc_hi;
     logic [31:0] exception_pc;
     logic [15:0] exception_sr;
     logic [3:0] quick_value;
@@ -46,6 +48,8 @@ module amcore_68k_baseline (
     logic [2:0] mem_dreg;
     logic [2:0] mem_areg;
     logic [1:0] mem_update;
+    logic branch_is_bsr;
+    logic [31:0] branch_return;
     integer i;
 
     localparam logic [1:0] MEM_NO_UPDATE = 2'd0;
@@ -73,6 +77,10 @@ module amcore_68k_baseline (
             S_RESET_PC_LO:  begin address=32'h6; read=1'b1; end
             S_FETCH: if (!irq_pending) begin address=pc; read=1'b1; end
             S_IMM_SR: begin address=pc+32'd2; read=1'b1; end
+            S_BRANCH_EXT: begin address=pc+32'd2; read=1'b1; end
+            S_BSR_PUSH_LO: begin address=areg[7]-32'd2; data_out=branch_return[15:0]; write=1'b1; end
+            S_BSR_PUSH_HI: begin address=areg[7]-32'd2; data_out=branch_return[31:16]; write=1'b1; end
+            S_RTS_POP_HI, S_RTS_POP_LO: begin address=areg[7]; read=1'b1; end
             S_EXC_PUSH_PC_LO: begin address=areg[7]-32'd2; data_out=exception_pc[15:0]; write=1'b1; end
             S_EXC_PUSH_PC_HI: begin address=areg[7]-32'd2; data_out=exception_pc[31:16]; write=1'b1; end
             S_EXC_PUSH_SR: begin address=areg[7]-32'd2; data_out=exception_sr; write=1'b1; end
@@ -89,10 +97,11 @@ module amcore_68k_baseline (
 
     always_ff @(posedge clk) begin
         if (!reset_n) begin
-            state<=S_RESET_SSP_HI; reset_hi<=0; vector_hi<=0; rte_pc_hi<=0;
+            state<=S_RESET_SSP_HI; reset_hi<=0; vector_hi<=0; rte_pc_hi<=0; rts_pc_hi<=0;
             exception_pc<=0; exception_sr<=0; pc<=0; sr<=16'h2700; ir<=0;
             halted<=0; exception<=0; exception_vector<=0;
             mem_ea<=0; mem_value<=0; mem_dreg<=0; mem_areg<=0; mem_update<=MEM_NO_UPDATE;
+            branch_is_bsr<=0; branch_return<=0;
             for (i=0;i<8;i=i+1) begin dreg[i]<=0; areg[i]<=0; end
         end else begin
             case (state)
@@ -111,21 +120,30 @@ module amcore_68k_baseline (
                     else if((ir & 16'hF100)==16'h7000) begin
                         dreg[ir[11:9]]<={{24{ir[7]}},ir[7:0]}; sr[3]<=ir[7]; sr[2]<=(ir[7:0]==0); sr[1:0]<=0;
                         pc<=pc+2; state<=S_FETCH;
-                    end else if((ir & 16'hFF00)==16'h6000 && ir[7:0]!=0) begin pc<=pc+2+{{24{ir[7]}},ir[7:0]}; state<=S_FETCH; end
-                    else if((ir & 16'hF1F8)==16'h5080 || (ir & 16'hF1F8)==16'h5180) begin
+                    end else if((ir & 16'hFF00)==16'h6100) begin
+                        // BSR.s uses an 8-bit displacement; 0 selects the extension-word form.
+                        branch_is_bsr<=1'b1;
+                        if(ir[7:0]!=8'h00) begin
+                            branch_return<=pc+32'd2;
+                            pc<=pc+32'd2+{{24{ir[7]}},ir[7:0]};
+                            state<=S_BSR_PUSH_LO;
+                        end else state<=S_BRANCH_EXT;
+                    end else if((ir & 16'hFF00)==16'h6000) begin
+                        // BRA.s uses an 8-bit displacement; 0 selects BRA.w.
+                        branch_is_bsr<=1'b0;
+                        if(ir[7:0]!=8'h00) begin pc<=pc+32'd2+{{24{ir[7]}},ir[7:0]}; state<=S_FETCH; end
+                        else state<=S_BRANCH_EXT;
+                    end else if((ir & 16'hF1F8)==16'h5080 || (ir & 16'hF1F8)==16'h5180) begin
                         dreg[ir[2:0]]<=alu_result; sr[3]<=alu_result[31]; sr[2]<=(alu_result==0); sr[1:0]<=0; pc<=pc+2; state<=S_FETCH;
                     end else if((ir & 16'hFFF8)==16'h4280) begin
                         dreg[ir[2:0]]<=0; sr[3]<=0; sr[2]<=1; sr[1:0]<=0; pc<=pc+2; state<=S_FETCH;
                     end else if(ir[15:12]==4'h2 && ir[8:6]==3'b000 && ir[5:3]==3'b000) begin
-                        // MOVE.L Dm,Dn.
                         dreg[ir[11:9]]<=dreg[ir[2:0]]; sr[3]<=dreg[ir[2:0]][31]; sr[2]<=(dreg[ir[2:0]]==0); sr[1:0]<=0;
                         pc<=pc+2; state<=S_FETCH;
                     end else if(ir[15:12]==4'h2 && ir[8:6]==3'b001 && ir[5:3]==3'b001) begin
-                        // MOVEA.L Am,An; CCR unchanged.
                         areg[ir[11:9]]<=areg[ir[2:0]]; pc<=pc+2; state<=S_FETCH;
                     end else if(ir[15:12]==4'h2 && ir[8:6]==3'b000 &&
                                 (ir[5:3]==3'b010 || ir[5:3]==3'b011 || ir[5:3]==3'b100)) begin
-                        // MOVE.L (An)/(An)+/-(An),Dn.
                         mem_dreg<=ir[11:9]; mem_areg<=ir[2:0]; mem_update<=MEM_NO_UPDATE;
                         if(ir[5:3]==3'b100) begin
                             mem_ea<=areg[ir[2:0]]-32'd4; areg[ir[2:0]]<=areg[ir[2:0]]-32'd4; mem_update<=MEM_PREDEC;
@@ -136,7 +154,6 @@ module amcore_68k_baseline (
                         state<=S_MEM_RD_HI;
                     end else if(ir[15:12]==4'h2 && ir[5:3]==3'b000 &&
                                 (ir[8:6]==3'b010 || ir[8:6]==3'b011 || ir[8:6]==3'b100)) begin
-                        // MOVE.L Dm,(An)/(An)+/-(An).
                         mem_value<=dreg[ir[2:0]]; mem_areg<=ir[11:9]; mem_update<=MEM_NO_UPDATE;
                         sr[3]<=dreg[ir[2:0]][31]; sr[2]<=(dreg[ir[2:0]]==0); sr[1:0]<=0;
                         if(ir[8:6]==3'b100) begin
@@ -146,6 +163,8 @@ module amcore_68k_baseline (
                             if(ir[8:6]==3'b011) mem_update<=MEM_POSTINC;
                         end
                         state<=S_MEM_WR_HI;
+                    end else if(ir==16'h4E75) begin
+                        state<=S_RTS_POP_HI;
                     end else if(ir==16'h46FC) begin
                         if(sr[13]) state<=S_IMM_SR;
                         else begin exception<=1; exception_vector<=8'd8; exception_pc<=pc; exception_sr<=sr; sr[13]<=1; state<=S_EXC_PUSH_PC_LO; end
@@ -154,6 +173,20 @@ module amcore_68k_baseline (
                         else begin exception<=1; exception_vector<=8'd8; exception_pc<=pc; exception_sr<=sr; sr[13]<=1; state<=S_EXC_PUSH_PC_LO; end
                     end else begin exception<=1; exception_vector<=8'd4; exception_pc<=pc; exception_sr<=sr; sr[13]<=1; state<=S_EXC_PUSH_PC_LO; end
                 end
+                S_BRANCH_EXT: if(ack) begin
+                    if(branch_is_bsr) begin
+                        branch_return<=pc+32'd4;
+                        pc<=pc+32'd2+{{16{data_in[15]}},data_in};
+                        state<=S_BSR_PUSH_LO;
+                    end else begin
+                        pc<=pc+32'd2+{{16{data_in[15]}},data_in};
+                        state<=S_FETCH;
+                    end
+                end
+                S_BSR_PUSH_LO: if(ack) begin areg[7]<=areg[7]-32'd2; state<=S_BSR_PUSH_HI; end
+                S_BSR_PUSH_HI: if(ack) begin areg[7]<=areg[7]-32'd2; state<=S_FETCH; end
+                S_RTS_POP_HI: if(ack) begin rts_pc_hi<=data_in; areg[7]<=areg[7]+32'd2; state<=S_RTS_POP_LO; end
+                S_RTS_POP_LO: if(ack) begin pc<={rts_pc_hi,data_in}; areg[7]<=areg[7]+32'd2; state<=S_FETCH; end
                 S_MEM_RD_HI: if(ack) begin mem_value[31:16]<=data_in; state<=S_MEM_RD_LO; end
                 S_MEM_RD_LO: if(ack) begin
                     mem_value[15:0]<=data_in;
