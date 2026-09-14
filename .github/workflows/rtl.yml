@@ -1,0 +1,15 @@
+name: RTL
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Compile SystemVerilog smoke target
+        run: iverilog -g2012 -s amcore_placeholder -o /tmp/amcore.vvp rtl/amcore_placeholder.sv
