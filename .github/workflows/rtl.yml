@@ -51,3 +51,10 @@ jobs:
           rtl/amcore_68k_baseline.sv
           sim/tb_m1_4_interrupts.sv
           && vvp /tmp/amcore-m1-4.vvp
+      - name: Compile and run M1.5 RTE/CCR
+        run: >-
+          iverilog -g2012 -s tb_m1_5_rte
+          -o /tmp/amcore-m1-5.vvp
+          rtl/amcore_68k_baseline.sv
+          sim/tb_m1_5_rte.sv
+          && vvp /tmp/amcore-m1-5.vvp
