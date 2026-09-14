@@ -20,7 +20,8 @@
 - [x] Interrupt and reset infrastructure
 - [x] Deterministic simulation vectors
 - [ ] Expand 68000 instruction coverage
-- [ ] Exception/interrupt execution model
+- [x] Exception execution baseline (M1.3 reset SSP/PC, vector fetch, SR/PC stack frame)
+- [ ] Interrupt priority/mask and autovector model
 
 ## M2 — OCS baseline
 
