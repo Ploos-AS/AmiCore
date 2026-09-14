@@ -13,12 +13,14 @@
 ## M1 — Core infrastructure
 
 - [x] CPU integration boundary
-- [ ] 68000-compatible execution baseline
+- [x] 68000-compatible execution baseline (M1.1 minimal instruction set)
 - [x] Address/data bus
 - [x] Chip RAM interface
 - [x] ROM interface
 - [x] Interrupt and reset infrastructure
 - [x] Deterministic simulation vectors
+- [ ] Expand 68000 instruction coverage
+- [ ] Exception/interrupt execution model
 
 ## M2 — OCS baseline
 
