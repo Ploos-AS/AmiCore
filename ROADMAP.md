@@ -21,7 +21,7 @@
 - [x] Deterministic simulation vectors
 - [ ] Expand 68000 instruction coverage
 - [x] Exception execution baseline (M1.3 reset SSP/PC, vector fetch, SR/PC stack frame)
-- [ ] Interrupt priority/mask and autovector model
+- [x] Interrupt priority/mask and autovector baseline (M1.4 levels 1-7)
 
 ## M2 — OCS baseline
 
