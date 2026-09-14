@@ -1,10 +1,12 @@
-// AmiCore M1.3 — minimal clean-room 68000 execution baseline.
-// Supported instructions: NOP, MOVEQ, BRA.s, ADDQ.L D0, SUBQ.L D0, CLR.L D0.
-// M1.3 adds 68000-style reset vectors and illegal-instruction exception entry.
+// AmiCore M1.4 — minimal clean-room 68000 execution baseline.
+// Supported instructions: NOP, MOVEQ, BRA.s, ADDQ.L D0, SUBQ.L D0, CLR.L D0,
+// and MOVE #imm,SR for controlled interrupt-mask tests.
+// M1.4 adds interrupt priority/masking and autovectors levels 1-7.
 
 module amcore_68k_baseline (
     input  logic        clk,
     input  logic        reset_n,
+    input  logic [2:0]  irq_level,
     output logic [31:0] address,
     output logic [15:0] data_out,
     input  logic [15:0] data_in,
@@ -27,6 +29,7 @@ module amcore_68k_baseline (
         S_RESET_PC_LO,
         S_FETCH,
         S_EXEC,
+        S_IMM_SR,
         S_EXC_PUSH_PC_LO,
         S_EXC_PUSH_PC_HI,
         S_EXC_PUSH_SR,
@@ -42,6 +45,7 @@ module amcore_68k_baseline (
     logic [31:0] exception_pc;
     logic [15:0] exception_sr;
     logic [3:0] quick_value;
+    logic irq_pending;
 
     always_comb begin
         address = 32'h0;
@@ -49,6 +53,8 @@ module amcore_68k_baseline (
         read = 1'b0;
         write = 1'b0;
         quick_value = (ir[11:9] == 3'b000) ? 4'd8 : {1'b0, ir[11:9]};
+        irq_pending = (irq_level != 3'd0) &&
+                      ((irq_level == 3'd7) || (irq_level > sr[10:8]));
 
         case (state)
             S_RESET_SSP_HI: begin address = 32'h00000000; read = 1'b1; end
@@ -56,7 +62,13 @@ module amcore_68k_baseline (
             S_RESET_PC_HI:  begin address = 32'h00000004; read = 1'b1; end
             S_RESET_PC_LO:  begin address = 32'h00000006; read = 1'b1; end
             S_FETCH: begin
-                address = pc;
+                if (!irq_pending) begin
+                    address = pc;
+                    read = 1'b1;
+                end
+            end
+            S_IMM_SR: begin
+                address = pc + 32'd2;
                 read = 1'b1;
             end
             S_EXC_PUSH_PC_LO: begin
@@ -119,9 +131,20 @@ module amcore_68k_baseline (
                     pc <= {reset_hi, data_in};
                     state <= S_FETCH;
                 end
-                S_FETCH: if (ack) begin
-                    ir <= data_in;
-                    state <= S_EXEC;
+                S_FETCH: begin
+                    if (irq_pending) begin
+                        // MC68000 autovectors are vectors 25..31 for levels 1..7.
+                        exception <= 1'b1;
+                        exception_vector <= 8'd24 + {5'd0, irq_level};
+                        exception_pc <= pc;
+                        exception_sr <= sr;
+                        sr[13] <= 1'b1;
+                        sr[10:8] <= irq_level;
+                        state <= S_EXC_PUSH_PC_LO;
+                    end else if (ack) begin
+                        ir <= data_in;
+                        state <= S_EXEC;
+                    end
                 end
                 S_EXEC: begin
                     if (ir == 16'h4E71) begin
@@ -146,16 +169,22 @@ module amcore_68k_baseline (
                         d0 <= 32'h00000000;
                         pc <= pc + 32'd2;
                         state <= S_FETCH;
+                    end else if (ir == 16'h46FC) begin
+                        // MOVE #imm,SR. Kept minimal for M1.4 interrupt-mask testing.
+                        state <= S_IMM_SR;
                     end else begin
-                        // Illegal instruction: vector 4. The saved PC identifies
-                        // the offending opcode in this baseline.
                         exception <= 1'b1;
                         exception_vector <= 8'd4;
                         exception_pc <= pc;
                         exception_sr <= sr;
-                        sr[13] <= 1'b1; // supervisor mode
+                        sr[13] <= 1'b1;
                         state <= S_EXC_PUSH_PC_LO;
                     end
+                end
+                S_IMM_SR: if (ack) begin
+                    sr <= data_in;
+                    pc <= pc + 32'd4;
+                    state <= S_FETCH;
                 end
                 S_EXC_PUSH_PC_LO: if (ack) begin
                     a7 <= a7 - 32'd2;
