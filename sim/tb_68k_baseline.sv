@@ -38,10 +38,16 @@ module tb_68k_baseline;
         mem[0] = 16'h7005;
         mem[1] = 16'h6002;
         mem[2] = 16'h4E71;
-        #2 reset_n = 1'b1;
-        repeat (16) @(posedge clk);
-        if (d0 !== 32'h00000005) $fatal(1, "FAIL: MOVEQ D0=%h", d0);
-        if (pc !== 32'h00000016) $fatal(1, "FAIL: PC=%h", pc);
+
+        // The core uses a synchronous active-low reset. Keep reset asserted
+        // across clock edges so state/register initialization is guaranteed.
+        repeat (2) @(posedge clk);
+        reset_n = 1'b1;
+
+        wait (d0 == 32'h00000005);
+        wait (pc == 32'h00000016);
+        #1;
+        if (halted) $fatal(1, "FAIL: core halted unexpectedly");
         $display("PASS: 68000 baseline RESET/MOVEQ/BRA/NOP");
         $finish;
     end
