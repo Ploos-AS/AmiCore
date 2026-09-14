@@ -37,3 +37,10 @@ jobs:
           rtl/amcore_68k_baseline.sv
           sim/tb_m1_2_cpu.sv
           && vvp /tmp/amcore-m1-2.vvp
+      - name: Compile and run M1.3 exception entry
+        run: >-
+          iverilog -g2012 -s tb_m1_3_exception
+          -o /tmp/amcore-m1-3.vvp
+          rtl/amcore_68k_baseline.sv
+          sim/tb_m1_3_exception.sv
+          && vvp /tmp/amcore-m1-3.vvp
