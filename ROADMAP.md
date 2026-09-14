@@ -4,21 +4,21 @@
 
 - [x] Define project scope and clean-room compatibility policy
 - [x] Establish repository documentation baseline
-- [ ] Establish SystemVerilog toolchain
-- [ ] Add simulation smoke test
-- [ ] Add GitHub Actions CI
-- [ ] Define top-level bus and clock/reset contracts
-- [ ] Define board-independent core interfaces
+- [x] Establish SystemVerilog toolchain
+- [x] Add simulation smoke test
+- [x] Add GitHub Actions CI
+- [x] Define top-level bus and clock/reset contracts
+- [x] Define board-independent core interfaces
 
 ## M1 — Core infrastructure
 
-- [ ] CPU integration boundary
+- [x] CPU integration boundary
 - [ ] 68000-compatible execution baseline
-- [ ] Address/data bus
-- [ ] Chip RAM interface
-- [ ] ROM interface
-- [ ] Interrupt and reset infrastructure
-- [ ] Deterministic simulation vectors
+- [x] Address/data bus
+- [x] Chip RAM interface
+- [x] ROM interface
+- [x] Interrupt and reset infrastructure
+- [x] Deterministic simulation vectors
 
 ## M2 — OCS baseline
 
