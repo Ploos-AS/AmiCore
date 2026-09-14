@@ -22,6 +22,7 @@
 - [ ] Expand 68000 instruction coverage
 - [x] Exception execution baseline (M1.3 reset SSP/PC, vector fetch, SR/PC stack frame)
 - [x] Interrupt priority/mask and autovector baseline (M1.4 levels 1-7)
+- [x] RTE and basic CCR N/Z baseline (M1.5)
 
 ## M2 — OCS baseline
 
