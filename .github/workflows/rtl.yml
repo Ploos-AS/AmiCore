@@ -13,48 +13,18 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y iverilog
       - name: Compile SystemVerilog sources
         run: >-
-          iverilog -g2012
-          -o /tmp/amcore-m1.vvp
-          rtl/amcore_placeholder.sv
-          rtl/amcore_bus_if.sv
-          rtl/amcore_cpu_if.sv
-          rtl/amcore_memory_if.sv
-          rtl/amcore_68k_baseline.sv
-          sim/tb_m1_interfaces.sv
+          iverilog -g2012 -o /tmp/amcore-m1.vvp rtl/amcore_placeholder.sv rtl/amcore_bus_if.sv rtl/amcore_cpu_if.sv rtl/amcore_memory_if.sv rtl/amcore_68k_baseline.sv sim/tb_m1_interfaces.sv
       - name: Run M1 deterministic simulation
         run: vvp /tmp/amcore-m1.vvp
       - name: Compile and run 68000 baseline
-        run: >-
-          iverilog -g2012 -s tb_68k_baseline
-          -o /tmp/amcore-68k.vvp
-          rtl/amcore_68k_baseline.sv
-          sim/tb_68k_baseline.sv
-          && vvp /tmp/amcore-68k.vvp
+        run: iverilog -g2012 -s tb_68k_baseline -o /tmp/amcore-68k.vvp rtl/amcore_68k_baseline.sv sim/tb_68k_baseline.sv && vvp /tmp/amcore-68k.vvp
       - name: Compile and run M1.2 CPU extension
-        run: >-
-          iverilog -g2012 -s tb_m1_2_cpu
-          -o /tmp/amcore-m1-2.vvp
-          rtl/amcore_68k_baseline.sv
-          sim/tb_m1_2_cpu.sv
-          && vvp /tmp/amcore-m1-2.vvp
+        run: iverilog -g2012 -s tb_m1_2_cpu -o /tmp/amcore-m1-2.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_2_cpu.sv && vvp /tmp/amcore-m1-2.vvp
       - name: Compile and run M1.3 exception entry
-        run: >-
-          iverilog -g2012 -s tb_m1_3_exception
-          -o /tmp/amcore-m1-3.vvp
-          rtl/amcore_68k_baseline.sv
-          sim/tb_m1_3_exception.sv
-          && vvp /tmp/amcore-m1-3.vvp
+        run: iverilog -g2012 -s tb_m1_3_exception -o /tmp/amcore-m1-3.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_3_exception.sv && vvp /tmp/amcore-m1-3.vvp
       - name: Compile and run M1.4 interrupts
-        run: >-
-          iverilog -g2012 -s tb_m1_4_interrupts
-          -o /tmp/amcore-m1-4.vvp
-          rtl/amcore_68k_baseline.sv
-          sim/tb_m1_4_interrupts.sv
-          && vvp /tmp/amcore-m1-4.vvp
+        run: iverilog -g2012 -s tb_m1_4_interrupts -o /tmp/amcore-m1-4.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_4_interrupts.sv && vvp /tmp/amcore-m1-4.vvp
       - name: Compile and run M1.5 RTE/CCR
-        run: >-
-          iverilog -g2012 -s tb_m1_5_rte
-          -o /tmp/amcore-m1-5.vvp
-          rtl/amcore_68k_baseline.sv
-          sim/tb_m1_5_rte.sv
-          && vvp /tmp/amcore-m1-5.vvp
+        run: iverilog -g2012 -s tb_m1_5_rte -o /tmp/amcore-m1-5.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_5_rte.sv && vvp /tmp/amcore-m1-5.vvp
+      - name: Compile and run M1.6 registers
+        run: iverilog -g2012 -s tb_m1_6_registers -o /tmp/amcore-m1-6.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_6_registers.sv && vvp /tmp/amcore-m1-6.vvp
