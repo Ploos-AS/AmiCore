@@ -28,3 +28,5 @@ jobs:
         run: iverilog -g2012 -s tb_m1_5_rte -o /tmp/amcore-m1-5.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_5_rte.sv && vvp /tmp/amcore-m1-5.vvp
       - name: Compile and run M1.6 registers
         run: iverilog -g2012 -s tb_m1_6_registers -o /tmp/amcore-m1-6.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_6_registers.sv && vvp /tmp/amcore-m1-6.vvp
+      - name: Compile and run M1.7 addressing modes
+        run: iverilog -g2012 -s tb_m1_7_addressing -o /tmp/amcore-m1-7.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_7_addressing.sv && vvp /tmp/amcore-m1-7.vvp
