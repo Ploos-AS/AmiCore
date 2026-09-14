@@ -19,12 +19,13 @@ module tb_68k_baseline;
 
     always_comb begin
         data_in = 16'h0000;
-        ack = 1'b0;
+        ack = read | write;
         if (read) begin
-            ack = 1'b1;
             case (address)
-                32'h00000000: data_in = 16'h0000;
-                32'h00000002: data_in = 16'h00000010;
+                32'h00000000: data_in = 16'h0000; // initial SSP high
+                32'h00000002: data_in = 16'h0100; // initial SSP low
+                32'h00000004: data_in = 16'h0000; // initial PC high
+                32'h00000006: data_in = 16'h0010; // initial PC low
                 32'h00000010: data_in = mem[0];
                 32'h00000012: data_in = mem[1];
                 32'h00000014: data_in = mem[2];
@@ -38,7 +39,7 @@ module tb_68k_baseline;
         mem[1] = 16'h6002; // BRA +2
         mem[2] = 16'h4E71; // NOP (branch target)
         #2 reset_n = 1'b1;
-        repeat (12) @(posedge clk);
+        repeat (16) @(posedge clk);
         if (d0 !== 32'h00000005) $fatal(1, "FAIL: MOVEQ D0=%h", d0);
         if (pc !== 32'h00000016) $fatal(1, "FAIL: PC=%h", pc);
         $display("PASS: 68000 baseline RESET/MOVEQ/BRA/NOP");
