@@ -1,7 +1,7 @@
-// AmiCore M1.4 — minimal clean-room 68000 execution baseline.
+// AmiCore M1.5 — minimal clean-room 68000 execution baseline.
 // Supported instructions: NOP, MOVEQ, BRA.s, ADDQ.L D0, SUBQ.L D0, CLR.L D0,
-// and MOVE #imm,SR for controlled interrupt-mask tests.
-// M1.4 adds interrupt priority/masking and autovectors levels 1-7.
+// MOVE #imm,SR and RTE.
+// M1.5 adds return-from-exception and basic N/Z CCR updates.
 
 module amcore_68k_baseline (
     input  logic        clk,
@@ -22,7 +22,7 @@ module amcore_68k_baseline (
     output logic [7:0]  exception_vector
 );
 
-    typedef enum logic [3:0] {
+    typedef enum logic [4:0] {
         S_RESET_SSP_HI,
         S_RESET_SSP_LO,
         S_RESET_PC_HI,
@@ -35,6 +35,9 @@ module amcore_68k_baseline (
         S_EXC_PUSH_SR,
         S_EXC_VEC_HI,
         S_EXC_VEC_LO,
+        S_RTE_POP_SR,
+        S_RTE_POP_PC_HI,
+        S_RTE_POP_PC_LO,
         S_HALT
     } state_t;
 
@@ -42,10 +45,12 @@ module amcore_68k_baseline (
     logic [15:0] ir;
     logic [15:0] reset_hi;
     logic [15:0] vector_hi;
+    logic [15:0] rte_pc_hi;
     logic [31:0] exception_pc;
     logic [15:0] exception_sr;
     logic [3:0] quick_value;
     logic irq_pending;
+    logic [31:0] alu_result;
 
     always_comb begin
         address = 32'h0;
@@ -55,6 +60,11 @@ module amcore_68k_baseline (
         quick_value = (ir[11:9] == 3'b000) ? 4'd8 : {1'b0, ir[11:9]};
         irq_pending = (irq_level != 3'd0) &&
                       ((irq_level == 3'd7) || (irq_level > sr[10:8]));
+        alu_result = d0;
+        if ((ir & 16'hF1FF) == 16'h5080)
+            alu_result = d0 + quick_value;
+        else if ((ir & 16'hF1FF) == 16'h5180)
+            alu_result = d0 - quick_value;
 
         case (state)
             S_RESET_SSP_HI: begin address = 32'h00000000; read = 1'b1; end
@@ -94,6 +104,12 @@ module amcore_68k_baseline (
                 address = {22'h0, exception_vector, 2'b00} + 32'd2;
                 read = 1'b1;
             end
+            S_RTE_POP_SR,
+            S_RTE_POP_PC_HI,
+            S_RTE_POP_PC_LO: begin
+                address = a7;
+                read = 1'b1;
+            end
             default: begin end
         endcase
     end
@@ -103,6 +119,7 @@ module amcore_68k_baseline (
             state <= S_RESET_SSP_HI;
             reset_hi <= 16'h0;
             vector_hi <= 16'h0;
+            rte_pc_hi <= 16'h0;
             exception_pc <= 32'h0;
             exception_sr <= 16'h0;
             pc <= 32'h0;
@@ -151,27 +168,61 @@ module amcore_68k_baseline (
                         pc <= pc + 32'd2;
                         state <= S_FETCH;
                     end else if ((ir & 16'hF100) == 16'h7000) begin
+                        // MOVEQ #imm8,D0: update N/Z and clear V/C; X is unchanged.
                         d0 <= {{24{ir[7]}}, ir[7:0]};
+                        sr[3] <= ir[7];
+                        sr[2] <= (ir[7:0] == 8'h00);
+                        sr[1:0] <= 2'b00;
                         pc <= pc + 32'd2;
                         state <= S_FETCH;
                     end else if ((ir & 16'hFF00) == 16'h6000 && ir[7:0] != 8'h00) begin
                         pc <= pc + 32'd2 + {{24{ir[7]}}, ir[7:0]};
                         state <= S_FETCH;
                     end else if ((ir & 16'hF1FF) == 16'h5080) begin
-                        d0 <= d0 + quick_value;
+                        d0 <= alu_result;
+                        sr[3] <= alu_result[31];
+                        sr[2] <= (alu_result == 32'h00000000);
+                        sr[1:0] <= 2'b00;
                         pc <= pc + 32'd2;
                         state <= S_FETCH;
                     end else if ((ir & 16'hF1FF) == 16'h5180) begin
-                        d0 <= d0 - quick_value;
+                        d0 <= alu_result;
+                        sr[3] <= alu_result[31];
+                        sr[2] <= (alu_result == 32'h00000000);
+                        sr[1:0] <= 2'b00;
                         pc <= pc + 32'd2;
                         state <= S_FETCH;
                     end else if (ir == 16'h4280) begin
                         d0 <= 32'h00000000;
+                        sr[3] <= 1'b0;
+                        sr[2] <= 1'b1;
+                        sr[1:0] <= 2'b00;
                         pc <= pc + 32'd2;
                         state <= S_FETCH;
                     end else if (ir == 16'h46FC) begin
-                        // MOVE #imm,SR. Kept minimal for M1.4 interrupt-mask testing.
-                        state <= S_IMM_SR;
+                        // MOVE #imm,SR. Minimal privileged form for controlled tests.
+                        if (sr[13]) begin
+                            state <= S_IMM_SR;
+                        end else begin
+                            exception <= 1'b1;
+                            exception_vector <= 8'd8;
+                            exception_pc <= pc;
+                            exception_sr <= sr;
+                            sr[13] <= 1'b1;
+                            state <= S_EXC_PUSH_PC_LO;
+                        end
+                    end else if (ir == 16'h4E73) begin
+                        // RTE is privileged and restores SR followed by PC from the stack frame.
+                        if (sr[13]) begin
+                            state <= S_RTE_POP_SR;
+                        end else begin
+                            exception <= 1'b1;
+                            exception_vector <= 8'd8;
+                            exception_pc <= pc;
+                            exception_sr <= sr;
+                            sr[13] <= 1'b1;
+                            state <= S_EXC_PUSH_PC_LO;
+                        end
                     end else begin
                         exception <= 1'b1;
                         exception_vector <= 8'd4;
@@ -205,6 +256,21 @@ module amcore_68k_baseline (
                 S_EXC_VEC_LO: if (ack) begin
                     pc <= {vector_hi, data_in};
                     exception <= 1'b0;
+                    state <= S_FETCH;
+                end
+                S_RTE_POP_SR: if (ack) begin
+                    sr <= data_in;
+                    a7 <= a7 + 32'd2;
+                    state <= S_RTE_POP_PC_HI;
+                end
+                S_RTE_POP_PC_HI: if (ack) begin
+                    rte_pc_hi <= data_in;
+                    a7 <= a7 + 32'd2;
+                    state <= S_RTE_POP_PC_LO;
+                end
+                S_RTE_POP_PC_LO: if (ack) begin
+                    pc <= {rte_pc_hi, data_in};
+                    a7 <= a7 + 32'd2;
                     state <= S_FETCH;
                 end
                 S_HALT: state <= S_HALT;
