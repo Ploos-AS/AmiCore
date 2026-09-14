@@ -27,7 +27,7 @@ module tb_m1_2_cpu;
     );
 
     always_comb begin
-        ack = read;
+        ack = read | write;
         data_in = mem[address[8:1]];
     end
 
@@ -36,9 +36,15 @@ module tb_m1_2_cpu;
         for (i = 0; i < 128; i = i + 1)
             mem[i] = 16'h4E71;
 
-        // Reset PC = 0x00000020.
+        // Reset SSP = 0x00000100, PC = 0x00000020.
         mem[0] = 16'h0000;
-        mem[1] = 16'h0020;
+        mem[1] = 16'h0100;
+        mem[2] = 16'h0000;
+        mem[3] = 16'h0020;
+
+        // Illegal-instruction vector 4 -> 0x00000040.
+        mem[8] = 16'h0000;
+        mem[9] = 16'h0040;
 
         // Program: MOVEQ #5,D0; ADDQ.L #3,D0; SUBQ.L #1,D0; CLR.L D0; illegal.
         mem[16] = 16'h7005;
@@ -66,11 +72,12 @@ module tb_m1_2_cpu;
         if (d0 !== 32'd0) $fatal(1, "CLR failed: D0=%h", d0);
 
         wait (exception == 1'b1);
-        if (!halted) $fatal(1, "illegal opcode did not halt baseline core");
         if (exception_vector !== 8'd4)
             $fatal(1, "wrong exception vector: %0d", exception_vector);
+        wait (pc == 32'h00000040);
+        if (halted) $fatal(1, "exception entry unexpectedly halted core");
 
-        $display("PASS: M1.2 68000 ALU + illegal-instruction exception baseline");
+        $display("PASS: M1.2 ALU + illegal-instruction vector baseline");
         $finish;
     end
 endmodule
