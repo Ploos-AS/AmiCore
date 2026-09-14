@@ -23,6 +23,7 @@
 - [x] Exception execution baseline (M1.3 reset SSP/PC, vector fetch, SR/PC stack frame)
 - [x] Interrupt priority/mask and autovector baseline (M1.4 levels 1-7)
 - [x] RTE and basic CCR N/Z baseline (M1.5)
+- [x] D0-D7/A0-A7 register baseline and register-direct MOVE subset (M1.6)
 
 ## M2 — OCS baseline
 
