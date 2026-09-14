@@ -25,6 +25,7 @@
 - [x] RTE and basic CCR N/Z baseline (M1.5)
 - [x] D0-D7/A0-A7 register baseline and register-direct MOVE subset (M1.6)
 - [x] MOVE.L memory baseline with (An), (An)+ and -(An) (M1.7)
+- [x] BRA.w, BSR.s/BSR.w and RTS subroutine control-flow baseline (M1.8)
 
 ## M2 — OCS baseline
 
