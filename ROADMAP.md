@@ -24,6 +24,7 @@
 - [x] Interrupt priority/mask and autovector baseline (M1.4 levels 1-7)
 - [x] RTE and basic CCR N/Z baseline (M1.5)
 - [x] D0-D7/A0-A7 register baseline and register-direct MOVE subset (M1.6)
+- [x] MOVE.L memory baseline with (An), (An)+ and -(An) (M1.7)
 
 ## M2 — OCS baseline
 
