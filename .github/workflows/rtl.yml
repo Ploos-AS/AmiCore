@@ -40,3 +40,5 @@ jobs:
         run: iverilog -g2012 -s tb_m1_11_cpu_ccr -o /tmp/amcore-m1-11.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_11_cpu_ccr.sv && vvp /tmp/amcore-m1-11.vvp
       - name: Compile and run M1.12 USP/SSP stack banking
         run: iverilog -g2012 -s tb_m1_12_stack_banking -o /tmp/amcore-m1-12.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_12_stack_banking.sv && vvp /tmp/amcore-m1-12.vvp
+      - name: Compile and run M1.13 privilege violation
+        run: iverilog -g2012 -s tb_m1_13_privilege -o /tmp/amcore-m1-13.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_13_privilege.sv && vvp /tmp/amcore-m1-13.vvp
