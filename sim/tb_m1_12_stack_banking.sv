@@ -19,12 +19,12 @@ module tb_m1_12_stack_banking;
  always_ff@(posedge clk)if(write&&ack)ram[address[10:1]]<=data_out;
  initial begin
   for(cycles=0;cycles<512;cycles=cycles+1)ram[cycles]=0;
-  repeat(2)@(posedge clk);reset_n=1;
-  cycles=0;while(!((pc==32'h2a)&&!sr[13])&&cycles<300)begin @(posedge clk);cycles=cycles+1;end
+  repeat(2)@(posedge clk); #1; reset_n=1;
+  cycles=0;while(!((pc==32'h2a)&&!sr[13])&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
   if(cycles>=300)$fatal(1,"timeout entering user mode");
   if(a7!==32'h204||dut.usp!==32'h204||dut.ssp!==32'h200)$fatal(1,"bank setup A7=%h USP=%h SSP=%h",a7,dut.usp,dut.ssp);
-  irq_level=1; @(posedge clk); wait(exception); irq_level=0;
-  cycles=0;while(!((pc==32'h2a)&&!sr[13]&&(a7==32'h204))&&cycles<300)begin @(posedge clk);cycles=cycles+1;end
+  irq_level=1; @(posedge clk); #1; wait(exception); irq_level=0;
+  cycles=0;while(!((pc==32'h2a)&&!sr[13]&&(a7==32'h204))&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
   if(cycles>=300)$fatal(1,"timeout returning to user mode");
   if(dut.usp!==32'h204||dut.ssp!==32'h200)$fatal(1,"bank restore USP=%h SSP=%h",dut.usp,dut.ssp);
   if(ram[16'h00fd]!==16'h0000||ram[16'h00fe]!==16'h0000||ram[16'h00ff]!==16'h002a)$fatal(1,"bad supervisor exception frame %h %h %h",ram[16'h00fd],ram[16'h00fe],ram[16'h00ff]);
