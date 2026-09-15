@@ -32,3 +32,5 @@ jobs:
         run: iverilog -g2012 -s tb_m1_7_addressing -o /tmp/amcore-m1-7.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_7_addressing.sv && vvp /tmp/amcore-m1-7.vvp
       - name: Compile and run M1.8 control flow
         run: iverilog -g2012 -s tb_m1_8_control_flow -o /tmp/amcore-m1-8.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_8_control_flow.sv && vvp /tmp/amcore-m1-8.vvp
+      - name: Compile and run M1.9 address registers
+        run: iverilog -g2012 -s tb_m1_9_address_registers -o /tmp/amcore-m1-9.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_9_address_registers.sv && vvp /tmp/amcore-m1-9.vvp
