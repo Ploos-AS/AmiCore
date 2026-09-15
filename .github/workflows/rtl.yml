@@ -36,3 +36,5 @@ jobs:
         run: iverilog -g2012 -s tb_m1_9_address_registers -o /tmp/amcore-m1-9.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_9_address_registers.sv && vvp /tmp/amcore-m1-9.vvp
       - name: Compile and run M1.10 CCR arithmetic
         run: iverilog -g2012 -s tb_m1_10_ccr -o /tmp/amcore-m1-10.vvp rtl/amcore_alu.sv sim/tb_m1_10_ccr.sv && vvp /tmp/amcore-m1-10.vvp
+      - name: Compile and run M1.11 CPU CCR integration
+        run: iverilog -g2012 -s tb_m1_11_cpu_ccr -o /tmp/amcore-m1-11.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_11_cpu_ccr.sv && vvp /tmp/amcore-m1-11.vvp
