@@ -11,8 +11,9 @@ module tb_m1_13_privilege;
    32'h24:data_in=16'h4e60; // MOVE A0,USP
    32'h26:data_in=16'h46fc;32'h28:data_in=16'h0000; // enter user mode
    32'h2a:data_in=16'h4e73; // privileged RTE in user mode => vector 8
+   32'h2c:data_in=16'h60fe; // stable user-mode landing loop after handler skips offender
    32'h20*4:data_in=16'h0000;32'h20*4+2:data_in=16'h0060; // vector 8
-   32'h60:data_in=16'h4e73; // supervisor RTE returns to offending PC/user mode
+   32'h60:data_in=16'h4e73; // supervisor RTE
    default:data_in=ram[address[10:1]];
   endcase
  end
@@ -23,10 +24,19 @@ module tb_m1_13_privilege;
   cycles=0;while(!(exception&&exception_vector==8)&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
   if(cycles>=300)$fatal(1,"timeout waiting for privilege violation");
   if(dut.usp!==32'h204)$fatal(1,"USP not preserved: %h",dut.usp);
-  cycles=0;while(!((pc==32'h2a)&&!sr[13]&&(a7==32'h204))&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
+  // Wait until the complete privilege frame has been written and vector 8 has
+  // transferred control to the supervisor handler.  A 68000 privilege frame
+  // contains the address of the offending instruction, so an unchanged RTE
+  // would correctly retry the user-mode RTE and fault again.
+  cycles=0;while(!((pc==32'h60)&&sr[13])&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
+  if(cycles>=300)$fatal(1,"timeout entering privilege handler");
+  if(ram[16'h00fd]!==16'h0000||ram[16'h00fe]!==16'h0000||ram[16'h00ff]!==16'h002a)$fatal(1,"bad privilege frame %h %h %h",ram[16'h00fd],ram[16'h00fe],ram[16'h00ff]);
+  // Model a minimal handler policy: skip the offending two-byte instruction
+  // before RTE, then verify that RTE restores the user bank and SR.
+  ram[16'h00ff]=16'h002c;
+  cycles=0;while(!((pc==32'h2c)&&!sr[13]&&(a7==32'h204))&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
   if(cycles>=300)$fatal(1,"timeout returning from privilege handler");
   if(dut.ssp!==32'h200)$fatal(1,"SSP not restored: %h",dut.ssp);
-  if(ram[16'h00fd]!==16'h0000||ram[16'h00fe]!==16'h0000||ram[16'h00ff]!==16'h002a)$fatal(1,"bad privilege frame %h %h %h",ram[16'h00fd],ram[16'h00fe],ram[16'h00ff]);
   if(halted)$fatal(1,"unexpected halt");
   $display("PASS: M1.13 user-mode RTE privilege violation, vector 8 frame and bank restore");$finish;
  end
