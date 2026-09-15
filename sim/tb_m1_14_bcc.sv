@@ -10,10 +10,12 @@ module tb_m1_14_bcc;
   32'h10a:data_in=16'h70ff; 32'h10c:data_in=16'h6b02; 32'h10e:data_in=16'h7603; 32'h110:data_in=16'h6a02; 32'h112:data_in=16'h7804;
   // C=1 from 0xffffffff + 1: BCS taken, BCC not taken.
   32'h114:data_in=16'h70ff; 32'h116:data_in=16'h5280; 32'h118:data_in=16'h6502; 32'h11a:data_in=16'h7a05; 32'h11c:data_in=16'h6402; 32'h11e:data_in=16'h7c06;
-  // Z=1: BGT.w not taken must consume extension; BLE.w taken skips $12c.
-  32'h120:data_in=16'h7000; 32'h122:data_in=16'h6e00; 32'h124:data_in=16'h0004; 32'h126:data_in=16'h7e07; 32'h128:data_in=16'h6f00; 32'h12a:data_in=16'h0002; 32'h12c:data_in=16'h7009; 32'h12e:data_in=16'h6000; 32'h130:data_in=16'hfffc;
+  // Z=1: BGT.w not taken must consume extension. MOVEQ #7,D7 proves the
+  // fall-through path, then MOVEQ #0,D0 deliberately restores Z=1 before
+  // BLE.w. BLE.w +2 must skip MOVEQ #9,D0 and land at $132.
+  32'h120:data_in=16'h7000; 32'h122:data_in=16'h6e00; 32'h124:data_in=16'h0004; 32'h126:data_in=16'h7e07; 32'h128:data_in=16'h7000; 32'h12a:data_in=16'h6f00; 32'h12c:data_in=16'h0002; 32'h12e:data_in=16'h7009; 32'h130:data_in=16'h4e71; 32'h132:data_in=16'h60fe;
   default:data_in=16'h4e71;endcase end
- initial begin repeat(2)@(posedge clk);#1;reset_n=1;cycles=0;while(pc!=32'h12e&&cycles<400)begin @(posedge clk);#1;cycles=cycles+1;end
+ initial begin repeat(2)@(posedge clk);#1;reset_n=1;cycles=0;while(pc!=32'h132&&cycles<400)begin @(posedge clk);#1;cycles=cycles+1;end
   if(cycles>=400)$fatal(1,"timeout in Bcc qualification");
   if(dut.dreg[1]!==0)$fatal(1,"BEQ failed: skipped D1 write executed");
   if(dut.dreg[2]!==32'h2)$fatal(1,"BNE not-taken failed");
