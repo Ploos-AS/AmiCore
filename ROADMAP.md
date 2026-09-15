@@ -27,6 +27,7 @@
 - [x] MOVE.L memory baseline with (An), (An)+ and -(An) (M1.7)
 - [x] BRA.w, BSR.s/BSR.w and RTS subroutine control-flow baseline (M1.8)
 - [x] A0-A7 MOVEA chain and non-D0 memory-transfer qualification (M1.9)
+- [x] ADDQ.L/SUBQ.L 32-bit X/N/Z/V/C arithmetic baseline (M1.10)
 
 ## M2 — OCS baseline
 
