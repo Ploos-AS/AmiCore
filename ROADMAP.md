@@ -29,6 +29,7 @@
 - [x] A0-A7 MOVEA chain and non-D0 memory-transfer qualification (M1.9)
 - [x] ADDQ.L/SUBQ.L 32-bit X/N/Z/V/C arithmetic baseline (M1.10)
 - [x] Integrate ADDQ.L/SUBQ.L X/N/Z/V/C semantics into CPU execution path (M1.11)
+- [x] User/supervisor stack-pointer banking, MOVE USP and RTE bank restore (M1.12)
 
 ## M2 — OCS baseline
 
