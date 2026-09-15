@@ -5,15 +5,15 @@ module tb_m1_13_privilege;
  always_comb begin
   data_in=16'h4e71;
   case(address)
-   32'h0:data_in=16'h0000;32'h2:data_in=16'h0200;32'h4:data_in=16'h0000;32'h6:data_in=16'h0020;
-   32'h20:data_in=16'h204f; // MOVEA.L A7,A0
-   32'h22:data_in=16'h2018; // MOVE.L (A0)+,D0 => A0=$204
-   32'h24:data_in=16'h4e60; // MOVE A0,USP
-   32'h26:data_in=16'h46fc;32'h28:data_in=16'h0000; // enter user mode
-   32'h2a:data_in=16'h4e73; // privileged RTE in user mode => vector 8
-   32'h2c:data_in=16'h60fe; // stable user-mode landing loop after handler skips offender
-   32'h20*4:data_in=16'h0000;32'h20*4+2:data_in=16'h0060; // vector 8
-   32'h60:data_in=16'h4e73; // supervisor RTE
+   32'h0:data_in=16'h0000;32'h2:data_in=16'h0200;32'h4:data_in=16'h0000;32'h6:data_in=16'h0100;
+   32'h20:data_in=16'h0000;32'h22:data_in=16'h0160; // vector 8 = $00000160
+   32'h100:data_in=16'h204f; // MOVEA.L A7,A0
+   32'h102:data_in=16'h2018; // MOVE.L (A0)+,D0 => A0=$204
+   32'h104:data_in=16'h4e60; // MOVE A0,USP
+   32'h106:data_in=16'h46fc;32'h108:data_in=16'h0000; // enter user mode
+   32'h10a:data_in=16'h4e73; // privileged RTE in user mode => vector 8
+   32'h10c:data_in=16'h60fe; // stable user-mode landing loop after handler skips offender
+   32'h160:data_in=16'h4e73; // supervisor RTE
    default:data_in=ram[address[10:1]];
   endcase
  end
@@ -24,17 +24,12 @@ module tb_m1_13_privilege;
   cycles=0;while(!(exception&&exception_vector==8)&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
   if(cycles>=300)$fatal(1,"timeout waiting for privilege violation");
   if(dut.usp!==32'h204)$fatal(1,"USP not preserved: %h",dut.usp);
-  // Wait until the complete privilege frame has been written and vector 8 has
-  // transferred control to the supervisor handler.  A 68000 privilege frame
-  // contains the address of the offending instruction, so an unchanged RTE
-  // would correctly retry the user-mode RTE and fault again.
-  cycles=0;while(!((pc==32'h60)&&sr[13])&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
+  cycles=0;while(!((pc==32'h160)&&sr[13])&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
   if(cycles>=300)$fatal(1,"timeout entering privilege handler");
-  if(ram[16'h00fd]!==16'h0000||ram[16'h00fe]!==16'h0000||ram[16'h00ff]!==16'h002a)$fatal(1,"bad privilege frame %h %h %h",ram[16'h00fd],ram[16'h00fe],ram[16'h00ff]);
-  // Model a minimal handler policy: skip the offending two-byte instruction
-  // before RTE, then verify that RTE restores the user bank and SR.
-  ram[16'h00ff]=16'h002c;
-  cycles=0;while(!((pc==32'h2c)&&!sr[13]&&(a7==32'h204))&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
+  if(ram[16'h00fd]!==16'h0000||ram[16'h00fe]!==16'h0000||ram[16'h00ff]!==16'h010a)$fatal(1,"bad privilege frame %h %h %h",ram[16'h00fd],ram[16'h00fe],ram[16'h00ff]);
+  // Minimal handler policy: skip the offending two-byte RTE before returning.
+  ram[16'h00ff]=16'h010c;
+  cycles=0;while(!((pc==32'h10c)&&!sr[13]&&(a7==32'h204))&&cycles<300)begin @(posedge clk);#1;cycles=cycles+1;end
   if(cycles>=300)$fatal(1,"timeout returning from privilege handler");
   if(dut.ssp!==32'h200)$fatal(1,"SSP not restored: %h",dut.ssp);
   if(halted)$fatal(1,"unexpected halt");
