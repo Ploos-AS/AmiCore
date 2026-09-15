@@ -1,0 +1,20 @@
+name: M1.14 Bcc
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Qualify Bcc taken/not-taken and word extension
+        run: |
+          iverilog -g2012 -o /tmp/m1_14_bcc rtl/amcore_68k_baseline.sv sim/tb_m1_14_bcc.sv
+          vvp /tmp/m1_14_bcc
+      - name: Qualify signed and overflow Bcc conditions
+        run: |
+          iverilog -g2012 -o /tmp/m1_14_flags rtl/amcore_68k_baseline.sv sim/tb_m1_14_bcc_flags.sv
+          vvp /tmp/m1_14_flags
