@@ -22,3 +22,7 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_16_cpu rtl/amcore_68k_baseline.sv sim/tb_m1_16_cpu_jump.sv
           vvp /tmp/m1_16_cpu
+      - name: Qualify CPU JMP/JSR xxx.W/xxx.L and RTS round-trip
+        run: |
+          iverilog -g2012 -o /tmp/m1_16_cpu_abs rtl/amcore_68k_baseline.sv sim/tb_m1_16_cpu_absolute.sv
+          vvp /tmp/m1_16_cpu_abs
