@@ -1,5 +1,5 @@
-// AmiCore M1.15 — minimal clean-room 68000 execution baseline.
-// M1.15 adds DBcc and register-direct Scc execution from CCR.
+// AmiCore M1.16 — minimal clean-room 68000 execution baseline.
+// M1.16 adds JMP/JSR (An) control flow on top of the M1.15 baseline.
 module amcore_68k_baseline(
  input logic clk,input logic reset_n,input logic[2:0] irq_level,
  output logic[31:0] address,output logic[15:0] data_out,input logic[15:0] data_in,
@@ -49,6 +49,8 @@ module amcore_68k_baseline(
     else if(ir[15:12]==2&&ir[8:6]==1&&ir[5:3]==1)begin areg[ir[11:9]]<=areg[ir[2:0]];pc<=pc+2;state<=S_FETCH;end
     else if((ir&16'hFFF8)==16'h4E60)begin if(sr[13])begin usp<=areg[ir[2:0]];pc<=pc+2;state<=S_FETCH;end else enter_exception(8);end
     else if((ir&16'hFFF8)==16'h4E68)begin if(sr[13])begin areg[ir[2:0]]<=usp;pc<=pc+2;state<=S_FETCH;end else enter_exception(8);end
+    else if((ir&16'hFFF8)==16'h4ED0)begin pc<=areg[ir[2:0]];state<=S_FETCH;end
+    else if((ir&16'hFFF8)==16'h4E90)begin branch_return<=pc+2;pc<=areg[ir[2:0]];state<=S_BSR_PUSH_LO;end
     else if(ir[15:12]==2&&ir[8:6]==0&&(ir[5:3]==2||ir[5:3]==3||ir[5:3]==4))begin mem_dreg<=ir[11:9];mem_areg<=ir[2:0];mem_update<=0;if(ir[5:3]==4)begin mem_ea<=areg[ir[2:0]]-4;areg[ir[2:0]]<=areg[ir[2:0]]-4;mem_update<=2;end else begin mem_ea<=areg[ir[2:0]];if(ir[5:3]==3)mem_update<=1;end state<=S_MEM_RD_HI;end
     else if(ir[15:12]==2&&ir[5:3]==0&&(ir[8:6]==2||ir[8:6]==3||ir[8:6]==4))begin mem_value<=dreg[ir[2:0]];mem_areg<=ir[11:9];mem_update<=0;sr[3]<=dreg[ir[2:0]][31];sr[2]<=(dreg[ir[2:0]]==0);sr[1:0]<=0;if(ir[8:6]==4)begin mem_ea<=areg[ir[11:9]]-4;areg[ir[11:9]]<=areg[ir[11:9]]-4;mem_update<=2;end else begin mem_ea<=areg[ir[11:9]];if(ir[8:6]==3)mem_update<=1;end state<=S_MEM_WR_HI;end
     else if(ir==16'h4E75)state<=S_RTS_POP_HI;else if(ir==16'h46FC)begin if(sr[13])state<=S_IMM_SR;else enter_exception(8);end else if(ir==16'h4E73)begin if(sr[13])state<=S_RTE_POP_SR;else enter_exception(8);end else enter_exception(4);
