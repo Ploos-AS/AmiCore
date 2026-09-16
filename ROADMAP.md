@@ -33,7 +33,8 @@
 - [x] Privilege-violation vector 8 qualification from user mode with supervisor frame and RTE bank restore (M1.13)
 - [x] Bcc.s/Bcc.w conditional branch baseline with CCR condition qualification (M1.14)
 - [x] DBcc and register-direct Scc baseline with exhaustive condition-code and CPU execution qualification (M1.15)
-- [ ] JMP/JSR control-flow and effective-address baseline (M1.16)
+- [x] JMP/JSR control-flow and effective-address baseline: (An), xxx.W and xxx.L (M1.16)
+- [ ] LEA/PEA effective-address generation baseline (M1.17)
 
 ## M2 — OCS baseline
 
