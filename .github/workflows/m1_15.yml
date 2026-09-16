@@ -14,3 +14,7 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_15_condition rtl/amcore_condition.sv sim/tb_m1_15_condition.sv
           vvp /tmp/m1_15_condition
+      - name: Qualify DBcc execution semantics
+        run: |
+          iverilog -g2012 -o /tmp/m1_15_dbcc rtl/amcore_dbcc.sv sim/tb_m1_15_dbcc.sv
+          vvp /tmp/m1_15_dbcc
