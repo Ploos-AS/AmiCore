@@ -22,3 +22,7 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_15_scc rtl/amcore_scc_reg.sv sim/tb_m1_15_scc_reg.sv
           vvp /tmp/m1_15_scc
+      - name: Qualify CPU DBcc/Scc integration
+        run: |
+          iverilog -g2012 -o /tmp/m1_15_cpu rtl/amcore_68k_baseline.sv sim/tb_m1_15_cpu_dbcc_scc.sv
+          vvp /tmp/m1_15_cpu
