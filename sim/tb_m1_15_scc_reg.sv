@@ -8,7 +8,7 @@ module tb_m1_15_scc_reg;
   condition_true=1'b0; #1;
   if(dreg_out!==32'h12345600) $fatal(1,"Scc false mismatch: %h",dreg_out);
   dreg_in=32'habcdef00; condition_true=1'b1; #1;
-  if(dreg_out!==32'habcd efff) $fatal(1,"Scc preserve mismatch: %h",dreg_out);
+  if(dreg_out!==32'habcdefff) $fatal(1,"Scc preserve mismatch: %h",dreg_out);
   $display("PASS: M1.15 Scc Dn register semantics");
   $finish;
  end
