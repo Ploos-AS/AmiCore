@@ -1,0 +1,17 @@
+name: M1.17 Effective Address
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qualify-ea:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Qualify effective-address generator
+        run: |
+          iverilog -g2012 -o /tmp/m1_17_ea rtl/amcore_ea.sv sim/tb_m1_17_ea.sv
+          vvp /tmp/m1_17_ea
