@@ -14,12 +14,12 @@ module tb_m1_15_dbcc;
   check(1,32'h12340005,16'h0010,32'h12340005,32'h00000104,0);
   // Condition false: decrement low word and branch while result != -1.
   check(0,32'h12340005,16'h0010,32'h12340004,32'h00000112,1);
-  // Upper word is preserved.
+  // Upper word is preserved and negative displacement is sign-extended.
   check(0,32'habcd0001,16'hfffc,32'habcd0000,32'h000000fe,1);
   // Counter expiration: 0 -> ffff, no branch.
   check(0,32'hbeef0000,16'h0010,32'hbeefffff,32'h00000104,0);
   // ffff wraps to fffe and therefore branches.
-  check(0,32'hcafeffff,16'h0004,32'hcaf efffe,32'h00000106,1);
+  check(0,32'hcafeffff,16'h0004,32'hcafefffe,32'h00000106,1);
   $display("PASS: M1.15 DBcc execution semantics");$finish;
  end
 endmodule
