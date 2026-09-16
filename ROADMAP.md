@@ -32,6 +32,8 @@
 - [x] User/supervisor stack-pointer banking, MOVE USP and RTE bank restore (M1.12)
 - [x] Privilege-violation vector 8 qualification from user mode with supervisor frame and RTE bank restore (M1.13)
 - [x] Bcc.s/Bcc.w conditional branch baseline with CCR condition qualification (M1.14)
+- [x] DBcc and register-direct Scc baseline with exhaustive condition-code and CPU execution qualification (M1.15)
+- [ ] JMP/JSR control-flow and effective-address baseline (M1.16)
 
 ## M2 — OCS baseline
 
