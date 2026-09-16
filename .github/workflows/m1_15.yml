@@ -1,0 +1,16 @@
+name: M1.15 Condition Codes
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Qualify condition truth table and Scc values
+        run: |
+          iverilog -g2012 -o /tmp/m1_15_condition rtl/amcore_condition.sv sim/tb_m1_15_condition.sv
+          vvp /tmp/m1_15_condition
