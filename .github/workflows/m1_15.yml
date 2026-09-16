@@ -18,3 +18,7 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_15_dbcc rtl/amcore_dbcc.sv sim/tb_m1_15_dbcc.sv
           vvp /tmp/m1_15_dbcc
+      - name: Qualify Scc Dn register execution semantics
+        run: |
+          iverilog -g2012 -o /tmp/m1_15_scc rtl/amcore_scc_reg.sv sim/tb_m1_15_scc_reg.sv
+          vvp /tmp/m1_15_scc
