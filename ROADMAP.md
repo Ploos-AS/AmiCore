@@ -31,6 +31,7 @@
 - [x] Integrate ADDQ.L/SUBQ.L X/N/Z/V/C semantics into CPU execution path (M1.11)
 - [x] User/supervisor stack-pointer banking, MOVE USP and RTE bank restore (M1.12)
 - [x] Privilege-violation vector 8 qualification from user mode with supervisor frame and RTE bank restore (M1.13)
+- [x] Bcc.s/Bcc.w conditional branch baseline with CCR condition qualification (M1.14)
 
 ## M2 — OCS baseline
 
