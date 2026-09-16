@@ -1,0 +1,16 @@
+name: M1.16 JMP JSR
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Qualify JMP/JSR execution primitive
+        run: |
+          iverilog -g2012 -o /tmp/m1_16_jump rtl/amcore_jump.sv sim/tb_m1_16_jump.sv
+          vvp /tmp/m1_16_jump
