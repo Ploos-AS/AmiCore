@@ -14,6 +14,10 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_16_jump rtl/amcore_jump.sv sim/tb_m1_16_jump.sv
           vvp /tmp/m1_16_jump
+      - name: Qualify absolute JMP/JSR effective addresses
+        run: |
+          iverilog -g2012 -o /tmp/m1_16_abs rtl/amcore_jump_absolute.sv sim/tb_m1_16_absolute.sv
+          vvp /tmp/m1_16_abs
       - name: Qualify CPU JMP/JSR (An) and RTS round-trip
         run: |
           iverilog -g2012 -o /tmp/m1_16_cpu rtl/amcore_68k_baseline.sv sim/tb_m1_16_cpu_jump.sv
