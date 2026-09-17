@@ -1,0 +1,17 @@
+name: M1.19 PC Relative Effective Address
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qualify-pc-relative-ea:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Qualify d16(PC) effective-address primitive
+        run: |
+          iverilog -g2012 -o /tmp/m1_19_pc_relative rtl/amcore_ea.sv sim/tb_m1_19_pc_relative_ea.sv
+          vvp /tmp/m1_19_pc_relative
