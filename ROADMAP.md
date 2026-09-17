@@ -48,7 +48,9 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [x] JMP/JSR control-flow and effective-address baseline: (An), xxx.W and xxx.L (M1.16)
 - [x] LEA/PEA effective-address generation baseline: (An), d16(An), xxx.W and xxx.L (M1.17)
 - [x] CPU clock/timing control boundary for Authentic/Turbo modes with shared-bus stall semantics (M1.18)
-- [ ] complete remaining 68000 instruction/addressing coverage needed before OCS software qualification (M1.19+)
+- [x] PC-relative d16(PC) control effective addresses for LEA/PEA/JMP/JSR with baseline CPU qualification (M1.19)
+- [ ] indexed d8(An,Xn) / d8(PC,Xn) control effective-address baseline (M1.20)
+- [ ] complete remaining 68000 instruction/addressing coverage needed before OCS software qualification (M1.20+)
 
 ## M2 — A500 / OCS Authentic baseline
 
