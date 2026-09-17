@@ -47,7 +47,8 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [x] DBcc and register-direct Scc baseline with exhaustive condition-code and CPU execution qualification (M1.15)
 - [x] JMP/JSR control-flow and effective-address baseline: (An), xxx.W and xxx.L (M1.16)
 - [x] LEA/PEA effective-address generation baseline: (An), d16(An), xxx.W and xxx.L (M1.17)
-- [ ] define CPU clock/timing controls required by Authentic/Turbo modes (M1.18)
+- [x] CPU clock/timing control boundary for Authentic/Turbo modes with shared-bus stall semantics (M1.18)
+- [ ] complete remaining 68000 instruction/addressing coverage needed before OCS software qualification (M1.19+)
 
 ## M2 — A500 / OCS Authentic baseline
 
