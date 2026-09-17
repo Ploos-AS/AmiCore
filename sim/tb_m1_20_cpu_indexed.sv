@@ -11,7 +11,7 @@ module tb_m1_20_cpu_indexed;
   // MOVEQ #16,D0; LEA d8(A0,D0.L),A2 => 0x134 when A0=0x120,d8=4.
   mem[16'h080]=16'h7010;
   mem[16'h081]=16'h45F0; mem[16'h082]=16'h0804;
-  // PEA d8(PC,D0.L): extension at 0x108, base 0x108, +16,+8 => 0x120.
+  // PEA d8(PC,D0.L): extension at 0x106, base 0x106, +16,+8 => 0x118.
   mem[16'h083]=16'h487B; mem[16'h084]=16'h0808;
   // JMP d8(PC,D0.L): extension at 0x10C, +16,+0x34 => 0x150.
   mem[16'h085]=16'h4EFB; mem[16'h086]=16'h0834;
@@ -23,7 +23,7 @@ module tb_m1_20_cpu_indexed;
    if(pc==32'h150) begin
     if(dut.areg[2]!==32'h134) $fatal(1,"LEA indexed A2=%h",dut.areg[2]);
     if(a7!==32'h1FC) $fatal(1,"stack pointer=%h",a7);
-    if(mem[16'h0FE]!==16'h0000 || mem[16'h0FF]!==16'h0120) $fatal(1,"PEA indexed stack=%h%h",mem[16'h0FE],mem[16'h0FF]);
+    if(mem[16'h0FE]!==16'h0000 || mem[16'h0FF]!==16'h0118) $fatal(1,"PEA indexed stack=%h%h",mem[16'h0FE],mem[16'h0FF]);
     $display("PASS: M1.20 baseline CPU indexed LEA/PEA/JMP");
     $finish;
    end
