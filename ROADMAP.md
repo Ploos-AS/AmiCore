@@ -84,6 +84,10 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] two DE-9 joystick/mouse interfaces
 - [ ] physical floppy/Gotek support
 - [ ] keyboard interface
+- [ ] Gayle-compatible PCMCIA controller/register model
+- [ ] PCMCIA memory and I/O address mapping
+- [ ] PCMCIA card detect, reset, interrupt and status semantics
+- [ ] 16-bit PCMCIA Type II bus-cycle/timing qualification
 - [ ] A1200-compatible expansion interfaces
 - [ ] A1200 system integration tests
 
@@ -102,6 +106,7 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] native RGB timing output/header path
 - [ ] SD/microSD storage
 - [ ] USB modern-input/service bridge where appropriate
+- [ ] vendor-independent wireless-module interface (SPI/UART baseline; SDIO optional)
 - [ ] board constraints and reproducible builds
 - [ ] automated per-profile LUT/LE, FF, BRAM, PLL/DSP, external-RAM and Fmax reports
 - [ ] explicit resource budgets for minimum A500 and A1200 targets
@@ -125,6 +130,10 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] optional Gotek OLED/encoder/button headers
 - [ ] SD/microSD
 - [ ] A1200 IDE connector/interface
+- [ ] physical 16-bit PCMCIA Type II slot on AmiCore 1200 full board
+- [ ] PCMCIA voltage/power protection and level-interface design
+- [ ] qualify representative legacy A1200 PCMCIA SRAM, CompactFlash, Ethernet and I/O cards
+- [ ] optional vendor-independent Wi-Fi/Bluetooth module footprint/header
 - [ ] RTC and battery-backed timekeeping
 - [ ] optional native RGB adapter/header
 - [ ] JTAG, UART, programming header and debug/test points
@@ -133,7 +142,7 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] manufacturing/Gerber files
 - [ ] bring-up documentation
 
-## M8 — Ethernet and expansion
+## M8 — Ethernet, wireless and expansion
 
 - [ ] define board-independent AmiCore peripheral/expansion bus
 - [ ] define Amiga-visible Ethernet device model
@@ -141,10 +150,15 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] optional Ethernet footprint/module path for Mini boards
 - [ ] integrated RJ45 Ethernet target for full boards
 - [ ] interrupt and DMA/bus integration where appropriate
-- [ ] open AmigaOS driver/API support
+- [ ] open AmigaOS Ethernet driver/API support
 - [ ] compatibility strategy for established Amiga TCP/IP stacks
 - [ ] loopback and packet-level RTL tests
 - [ ] hardware network qualification
+- [ ] define vendor-independent Wi-Fi/Bluetooth module protocol
+- [ ] Wi-Fi network backend through the common AmiCore network abstraction
+- [ ] Bluetooth HID bridge for keyboard, mouse and gamepads
+- [ ] keep wireless optional so minimum FPGA/PCB profiles do not pay its cost
+- [ ] evaluate virtual PCMCIA devices after physical PCMCIA compatibility is established
 - [ ] preserve A500 side-expansion semantics where practical
 - [ ] preserve A1200 expansion/clock-port semantics where practical
 
@@ -171,5 +185,7 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] serial/parallel/joystick qualification
 - [ ] HDMI/audio latency and timing qualification
 - [ ] Ethernet qualification
+- [ ] Wi-Fi/Bluetooth qualification where fitted
+- [ ] physical PCMCIA compatibility matrix with legacy cards
 - [ ] long-running stability tests
 - [ ] cross-board deterministic compatibility suite
