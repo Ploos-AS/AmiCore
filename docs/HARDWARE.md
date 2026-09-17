@@ -34,11 +34,12 @@ AmiCore should produce the smallest practical hardware implementations of two pr
 - physical floppy/Gotek interface
 - SD/microSD
 - wired Ethernet
+- optional Wi-Fi/Bluetooth module
 - RTC
 - JTAG/UART/programming access
 - diagnostic test points
 
-The A1200 board additionally targets IDE and appropriate A1200 expansion facilities.
+The A1200 full board additionally targets IDE, a physical 16-bit PCMCIA Type II slot, and appropriate A1200 expansion facilities.
 
 ## Floppy / Gotek
 
@@ -50,14 +51,7 @@ A real drive and a Gotek must be first-class qualification targets rather than b
 
 Expose relevant floppy signals at accessible test points or a debug header. Avoid a board topology that prevents high-resolution observation of drive transitions.
 
-A later FPGA implementation may provide:
-
-- flux transition timestamping
-- capture FIFO
-- capture to RAM/SD/host
-- flux replay
-- physical disk writing
-- preservation-oriented image workflows
+A later FPGA implementation may provide flux transition timestamping, a capture FIFO, capture to RAM/SD/host, flux replay, physical disk writing, and preservation-oriented image workflows.
 
 This is complementary to Gotek: Gotek provides convenient disk-image emulation, while flux support targets physical-media preservation and unusual/protected formats.
 
@@ -67,18 +61,31 @@ Full boards target wired Ethernet with RJ45. The exact implementation is selecte
 
 Mini boards should be able to omit the physical Ethernet hardware while retaining a standard expansion/module interface.
 
-Requirements:
+Requirements include an open documented Amiga-visible device interface, deterministic interrupt behaviour, packet-level simulation, an initial programmed-I/O implementation if useful, a path to future DMA/bus-master operation, an open AmigaOS driver/API, and compatibility consideration for established Amiga TCP/IP stacks. Networking must not perturb chipset timing.
 
-- open, documented Amiga-visible device interface
-- deterministic interrupt behaviour
-- packet-level simulation
-- initial programmed-I/O implementation may precede DMA
-- future DMA/bus-master operation must be architecturally possible
-- networking must not perturb chipset timing
-- open AmigaOS driver/API
-- compatibility with normal Amiga TCP/IP software should be considered during driver design
+## Wi-Fi and Bluetooth
 
-Wi-Fi is not required for the minimum machine. It may later be provided through an optional module without replacing wired Ethernet as the deterministic reference interface.
+Wireless support is optional and must not increase the minimum FPGA requirement. Radio, baseband and protocol-stack work belongs in a replaceable external module rather than the classic chipset RTL.
+
+Official boards should define a vendor-independent module interface. SPI and UART are the baseline control/data transports; SDIO may be evaluated where bandwidth justifies the added pins and complexity. The connector should expose suitable power, reset, interrupt/wake and service signals.
+
+Wi-Fi should feed the common AmiCore network abstraction so Amiga-side software can use a documented network-device/driver interface independent of the radio module chosen.
+
+Bluetooth should initially target HID bridging for keyboard, mouse and gamepads. The bridge translates Bluetooth HID events into AmiCore's classic input interfaces; Bluetooth is not part of OCS/AGA semantics.
+
+A specific ESP32-class or similar module may be used as a reference implementation, but the electrical and firmware contract must not make AmiCore dependent on one vendor or module generation.
+
+## PCMCIA / legacy A1200 cards
+
+The AmiCore 1200 full board targets a physical 16-bit PCMCIA Type II slot compatible with the A1200 interface. The purpose is not merely to provide a modern expansion connector: using surviving original A1200 PCMCIA cards is an explicit compatibility goal.
+
+The FPGA/system implementation therefore needs a Gayle-compatible PCMCIA controller model covering the software-visible register behaviour, address mapping, card detect/status, reset, interrupts and required bus cycles/timing.
+
+The PCB design must handle PCMCIA power, buffering/level requirements and protection deliberately. Compatibility qualification should use a matrix of representative legacy cards, including SRAM cards, CompactFlash/storage adapters, Ethernet/network cards and other common A1200 I/O cards where examples are available.
+
+AmiCore 1200 Mini may omit the physical slot while retaining the PCMCIA controller logic as an optional build feature. This keeps the software-visible architecture reusable without forcing the large legacy connector onto a minimum-size PCB.
+
+After physical PCMCIA compatibility is mature, a virtual-PCMCIA backend may be investigated. Internal AmiCore devices could then emulate selected PCMCIA device interfaces for compatibility, but virtual devices must not substitute for the physical-slot goal on AmiCore 1200 full.
 
 ## Video
 
@@ -88,44 +95,26 @@ Native Amiga RGB timing remains available internally and should be routable thro
 
 ## Modern input
 
-Classic DE-9 input is mandatory on full boards. USB keyboard/mouse/gamepad support may be provided by a service/input bridge. USB behaviour must be translated into the classic machine interface rather than embedded into chipset semantics.
+Classic DE-9 input is mandatory on full boards. USB keyboard/mouse/gamepad support may be provided by a service/input bridge. USB and Bluetooth behaviour must be translated into the classic machine interface rather than embedded into chipset semantics.
 
 ## Storage
 
 - SD/microSD for configuration, disk images and mass-storage use
 - physical floppy/Gotek
 - A1200 IDE
+- physical A1200 PCMCIA storage compatibility
 - future virtual IDE backed by SD where appropriate
 
 ## Expansion
 
-Provide a board-independent internal expansion/peripheral bus. Use it for optional Ethernet, RTG, storage and future accelerator/peripheral blocks. Preserve classic A500/A1200 expansion semantics where software compatibility requires them.
+Provide a board-independent internal expansion/peripheral bus. Use it for optional Ethernet, wireless, RTG, storage and future accelerator/peripheral blocks. Preserve classic A500/A1200 expansion semantics where software compatibility requires them.
 
 ## Serviceability
 
-Every official board should include:
-
-- JTAG/programming access
-- UART/debug access
-- useful clock/bus/floppy/video test points
-- recovery mechanism for broken FPGA/firmware updates
-- documented power rails
-- documented connector pinouts
-- reproducible KiCad sources, BOM and manufacturing outputs
+Every official board should include JTAG/programming access, UART/debug access, useful clock/bus/floppy/video test points, recovery for broken FPGA/firmware updates, documented power rails and connector pinouts, and reproducible KiCad sources, BOM and manufacturing outputs.
 
 ## Optimization metrics
 
-Each board/FPGA profile should record:
-
-- FPGA family/device
-- LUT/LE
-- FF/registers
-- BRAM/block RAM
-- PLL/DSP
-- external RAM type/capacity
-- Fmax
-- board area
-- estimated BOM cost
-- power measurements when hardware exists
+Each board/FPGA profile should record FPGA family/device, LUT/LE, FF/registers, BRAM/block RAM, PLL/DSP, external RAM type/capacity, Fmax, board area, estimated BOM cost and power measurements when hardware exists.
 
 Optimization must never silently trade away machine compatibility. Resource reductions are accepted together with regression qualification.
