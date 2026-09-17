@@ -12,6 +12,12 @@ Mechanical coordinates are never inferred from photographs. A datum becomes `ver
 
 For every dimension record: model/revision, source, datum origin, X/Y/Z, tolerance or measurement uncertainty, verification state, and notes.
 
+## A500 capture status
+
+The first machine-readable record now exists at `mechanical/interfaces/a500-classic-fit.json`. The Commodore expansion-location drawing is recorded as an authoritative source, including its drawing identity and the visible millimetre dimensions. Those values remain `captured-unmapped`: they are not converted into PCB XY coordinates until the drawing geometry can be mapped unambiguously to the AmiCore coordinate convention. This prevents a valid dimension from being attached to the wrong feature.
+
+The Commodore A500 Rev.5/6A/7 system schematics/board-layout package is also recorded as an authoritative source. Raemixx500 is recorded only as an independent fit/alignment cross-check because its author explicitly notes that the board was redrawn by hand and should not be assumed sub-millimetre accurate.
+
 ## A500 source baseline
 
 Primary historical material includes the Commodore A500/A2000 Technical Reference Manual and A500 service/system schematics. The Technical Reference Manual contains an engineering drawing specifically for the A500 expansion-connector location and states dimensions in millimetres.
