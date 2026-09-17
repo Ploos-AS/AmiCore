@@ -152,11 +152,12 @@ These items are intentionally **TO BE DECIDED** before the AmiCore I/O/interface
 - [ ] **TBD:** exact external Amiga floppy-drive connector implementation and mechanical placement
 - [ ] **TBD:** exact physical A500 side-expansion connector implementation
 - [ ] **TBD:** exact physical A1200 expansion and clock-port connector implementation
-- [ ] Review all remaining legacy connectors and explicitly classify each as mandatory, optional, internal-header-only or omitted on every board profile
+- [ ] Resolve all remaining `TBD` entries in `docs/BOARD_PROFILES.md` and explicitly classify each interface as mandatory, optional, internal-header-only or omitted on every board profile
 - [ ] Freeze the I/O/interface specification only after the decisions above are documented
 
 ## M7 — AmiCore hardware / PCB
 
+- [x] define physical board-profile matrix for Classic-Fit, External-Keyboard and Mini variants (`docs/BOARD_PROFILES.md`)
 - [ ] common board-level electrical/interface specification
 - [ ] keyboard connector/pinout/electrical specification for 500 and 1200 profiles
 - [ ] reference KiCad schematics
