@@ -5,12 +5,15 @@
 //   mode 2: xxx.W (sign-extended absolute short)
 //   mode 3: xxx.L (absolute long)
 //   mode 4: d16(PC), with pc_base pointing at the extension word
+//   mode 5: d8(An,Xn), brief extension word
+//   mode 6: d8(PC,Xn), brief extension word; pc_base is extension-word address
 module amcore_ea(
     input  logic [2:0]  mode,
     input  logic [31:0] address_register,
     input  logic [31:0] pc_base,
     input  logic [15:0] extension_hi,
     input  logic [15:0] extension_lo,
+    input  logic [31:0] index_register,
     output logic [31:0] effective_address,
     output logic [2:0]  extension_bytes
 );
@@ -37,6 +40,16 @@ module amcore_ea(
             end
             3'd4: begin
                 effective_address = pc_base + {{16{extension_hi[15]}}, extension_hi};
+                extension_bytes = 3'd2;
+            end
+            3'd5: begin
+                effective_address = address_register + {{24{extension_hi[7]}}, extension_hi[7:0]} +
+                    (extension_hi[11] ? index_register : {{16{index_register[15]}}, index_register[15:0]});
+                extension_bytes = 3'd2;
+            end
+            3'd6: begin
+                effective_address = pc_base + {{24{extension_hi[7]}}, extension_hi[7:0]} +
+                    (extension_hi[11] ? index_register : {{16{index_register[15]}}, index_register[15:0]});
                 extension_bytes = 3'd2;
             end
             default: begin
