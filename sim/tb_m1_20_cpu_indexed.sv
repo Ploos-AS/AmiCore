@@ -16,8 +16,9 @@ module tb_m1_20_cpu_indexed;
   // JMP d8(PC,D0.L): extension at 0x10A, +16,+0x36 => 0x150.
   mem[16'h085]=16'h4EFB; mem[16'h086]=16'h0836;
   mem[16'h0A8]=16'h60FE; // 0x150 stable
+  // Initialize A0 after reset has completed so DUT reset logic does not clear it.
   #20 reset_n=1;
-  dut.areg[0]=32'h00000120;
+  @(posedge clk); #1; dut.areg[0]=32'h00000120;
   for(cycles=0;cycles<300;cycles=cycles+1) begin
    @(posedge clk); #1;
    if(pc==32'h150) begin
