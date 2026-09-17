@@ -1,0 +1,19 @@
+name: M1.18 CPU Timing Control
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qualify-cpu-timing-control:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Qualify Authentic Turbo CPU timing boundary
+        run: |
+          iverilog -g2012 -o /tmp/m1_18_cpu_clock \
+            rtl/amcore_cpu_clock_control.sv \
+            sim/tb_m1_18_cpu_clock_control.sv
+          vvp /tmp/m1_18_cpu_clock
