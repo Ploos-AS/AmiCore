@@ -4,11 +4,13 @@
   "units": "mm",
   "status": "partial-authoritative",
   "coordinate_system": {
-    "status": "pending-board-measurement",
-    "origin": null,
-    "x_axis": null,
-    "y_axis": null,
-    "z_zero": null
+    "status": "defined-provisional",
+    "units": "mm",
+    "origin": "PCB lower-left bounding-box corner, component-side view",
+    "x_axis": "+X toward right side of computer",
+    "y_axis": "+Y toward rear I/O edge",
+    "z_zero": "component-side PCB surface",
+    "note": "Origin is now fixed for AmiCore data capture; coordinates remain unpopulated until source geometry is scaled/mapped against at least one known manufacturer dimension."
   },
   "sources": [
     {
@@ -177,5 +179,32 @@
     "floppy_mechanical_envelope": {
       "status": "needs-verification"
     }
-  }
+  },
+  "source_mapping": {
+    "rev5_board_layout": {
+      "source": "commodore-a500-system-schematics",
+      "assembly": "312511-02",
+      "status": "manufacturer board-layout drawing available",
+      "use": "derive PCB perimeter, connector/mount relative geometry after scale calibration"
+    },
+    "rev6a7_schematic": {
+      "source": "commodore-a500-system-schematics",
+      "assembly": "312511-03",
+      "status": "manufacturer schematic available",
+      "use": "connector identity and grounded mount relationships; not sufficient alone for XY coordinates"
+    },
+    "expansion_location": {
+      "source": "commodore-a500-a2000-trm-expansion-drawing",
+      "drawing": "3/26/3 rev 1",
+      "status": "manufacturer dimensioned drawing available",
+      "use": "primary metric scale/datum evidence for expansion-side geometry"
+    }
+  },
+  "validation_rules": [
+    "No XY coordinate may be marked verified from schematic connectivity alone.",
+    "Board-layout image/PDF coordinates must be calibrated against manufacturer dimensioned geometry before conversion to millimetres.",
+    "Rev.5 layout-derived coordinates must be checked against a Rev.6A/7 physical board or independently compatible replacement-board geometry before applying to the Rev.6A/7 Classic-Fit target.",
+    "Connector body coordinates and mating centerlines are separate datums.",
+    "At least one physical-case prototype fit is required before drop-in status."
+  ]
 }
