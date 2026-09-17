@@ -30,7 +30,9 @@ AmiCore should produce the smallest practical hardware implementations of two pr
 - analog stereo audio
 - serial
 - parallel
-- keyboard interface
+- dedicated classic Amiga keyboard interface/port
+- internal keyboard header where appropriate for original/reproduction keyboard assemblies
+- USB keyboard support through the modern input bridge
 - physical floppy/Gotek interface
 - SD/microSD
 - wired Ethernet
@@ -39,7 +41,13 @@ AmiCore should produce the smallest practical hardware implementations of two pr
 - JTAG/UART/programming access
 - diagnostic test points
 
-The A1200 full board additionally targets IDE, a physical 16-bit PCMCIA Type II slot, and appropriate A1200 expansion facilities.
+The A1200 full board additionally targets IDE, a physical 16-bit PCMCIA Type II slot, appropriate A1200 expansion facilities, and an internal keyboard connection suitable for an original/reproduction A1200 keyboard where electrically and mechanically practical.
+
+## Keyboard
+
+Keyboard support is a mandatory compatibility interface, not an optional modern-input feature. The classic keyboard protocol must terminate at a documented FPGA/system boundary and be qualified for reset, clock/data timing and keyboard-controller handshaking. Full boards must expose a dedicated physical keyboard connection; Mini boards may use an internal header while USB remains the convenient default input path.
+
+AmiCore 500 should support an A500-style classic keyboard path and AmiCore 1200 should support an A1200-style path. The full AmiCore 1200 mechanical/electrical design should explicitly investigate compatibility with original and reproduction A1200 keyboard assemblies. USB and Bluetooth keyboards are additional bridges and must not replace the classic interface in Authentic profiles.
 
 ## Floppy / Gotek
 
@@ -95,7 +103,7 @@ Native Amiga RGB timing remains available internally and should be routable thro
 
 ## Modern input
 
-Classic DE-9 input is mandatory on full boards. USB keyboard/mouse/gamepad support may be provided by a service/input bridge. USB and Bluetooth behaviour must be translated into the classic machine interface rather than embedded into chipset semantics.
+Classic DE-9 input and the dedicated classic keyboard interface are mandatory on full boards. USB keyboard/mouse/gamepad support may be provided by a service/input bridge. USB and Bluetooth behaviour must be translated into the classic machine interface rather than embedded into chipset semantics.
 
 ## Storage
 
