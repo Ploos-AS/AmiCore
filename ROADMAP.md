@@ -2,12 +2,14 @@
 
 ## Project targets
 
-AmiCore has two primary optimization targets:
+AmiCore has two primary compatibility targets:
 
-1. A highly compatible A500/OCS/68000 implementation using the smallest practical low-cost FPGA and supporting hardware.
-2. A highly compatible A1200/AGA/68020-class implementation using the smallest practical FPGA and supporting hardware.
+1. **AmiCore 500:** reproduce the original A500 gaming/demo experience as closely as practical using the smallest practical low-cost FPGA and supporting hardware.
+2. **AmiCore 1200:** reproduce an original A1200 as closely as practical and provide a full-featured replacement machine, including legacy peripheral compatibility, using efficient modern hardware.
 
-The same board-independent RTL architecture should scale across Mini, full-board and Developer Board profiles. FPGA resource use and external hardware cost are measurable project criteria, not afterthoughts.
+Every production profile must provide at least **Authentic** and **Turbo** operating modes. Authentic is the default compatibility reference. Turbo enables explicit enhancements without weakening Authentic behaviour.
+
+The same board-independent RTL architecture should scale across Mini, full-board and Developer Board profiles. FPGA resource use and external hardware cost are measurable criteria, but Authentic compatibility takes precedence over resource reduction.
 
 ## M0 — Foundation
 
@@ -18,6 +20,7 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [x] Add GitHub Actions CI
 - [x] Define top-level bus and clock/reset contracts
 - [x] Define board-independent core interfaces
+- [x] Define Authentic and Turbo operating-mode policy
 
 ## M1 — Core infrastructure
 
@@ -44,25 +47,38 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [x] DBcc and register-direct Scc baseline with exhaustive condition-code and CPU execution qualification (M1.15)
 - [x] JMP/JSR control-flow and effective-address baseline: (An), xxx.W and xxx.L (M1.16)
 - [ ] LEA/PEA effective-address generation baseline (M1.17)
+- [ ] define CPU clock/timing controls required by Authentic/Turbo modes
 
-## M2 — A500 / OCS baseline
+## M2 — A500 / OCS Authentic baseline
 
 - [ ] Agnus-compatible memory/DMA model
 - [ ] Denise-compatible video model
 - [ ] Paula-compatible audio/serial/floppy model
 - [ ] CIA timers/ports/interrupts
+- [ ] authentic A500 68000/chip-bus timing
+- [ ] authentic DMA-slot scheduling and bus contention
+- [ ] Copper timing qualification
+- [ ] Blitter and nasty-mode timing qualification
+- [ ] PAL/NTSC raster timing qualification
 - [ ] A500 memory map and machine profile
 - [ ] keyboard protocol/interface
 - [ ] two DE-9 joystick/mouse interfaces
 - [ ] serial interface
 - [ ] parallel interface
-- [ ] physical Amiga floppy interface
+- [ ] physical Amiga floppy interface and timing
 - [ ] Gotek/FlashFloppy compatibility
 - [ ] DF0:/DF1: and external-drive behaviour
-- [ ] OCS/A500 integration tests
+- [ ] timing-sensitive A500 game qualification suite
+- [ ] timing-sensitive A500 demo qualification suite
+- [ ] original-A500 trace/measurement corpus where practical
+- [ ] A500 Authentic integration tests
 
-## M3 — ECS
+## M3 — A500 Turbo / ECS
 
+- [ ] explicit A500 Turbo CPU clock configuration
+- [ ] optional Fast RAM in Turbo mode
+- [ ] accelerated storage path in Turbo mode
+- [ ] prove Turbo features do not alter Authentic regression results
 - [ ] ECS chipset extensions
 - [ ] ECS timing qualification
 - [ ] ECS machine profiles
@@ -74,11 +90,12 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] AGA memory and DMA extensions
 - [ ] AGA timing tests
 
-## M5 — A1200 reference platform
+## M5 — A1200 Authentic reference platform
 
 - [ ] 68020-class CPU integration
+- [ ] authentic A1200 CPU/chipset clock and bus timing
 - [ ] A1200 memory map
-- [ ] IDE interface
+- [ ] IDE interface and timing
 - [ ] RTC
 - [ ] serial and parallel interfaces
 - [ ] two DE-9 joystick/mouse interfaces
@@ -89,10 +106,16 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] PCMCIA card detect, reset, interrupt and status semantics
 - [ ] 16-bit PCMCIA Type II bus-cycle/timing qualification
 - [ ] A1200-compatible expansion interfaces
-- [ ] A1200 system integration tests
+- [ ] real legacy peripheral qualification
+- [ ] A1200 Authentic system integration tests
 
-## M6 — FPGA optimization and board profiles
+## M6 — Turbo and FPGA optimization
 
+- [ ] A1200 Turbo CPU configuration
+- [ ] Turbo Fast RAM
+- [ ] accelerated storage/memory paths
+- [ ] future RTG/accelerator hooks
+- [ ] prove Turbo features do not alter A1200 Authentic regression results
 - [ ] AmiCore 500 Mini profile
 - [ ] AmiCore 500 full profile
 - [ ] AmiCore 1200 Mini profile
@@ -101,6 +124,7 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] first low-cost FPGA target
 - [ ] SDRAM/PSRAM controller as required by target
 - [ ] HDMI output with low-latency/pixel-accurate scaling modes
+- [ ] avoid unnecessary frame buffering in Authentic mode
 - [ ] HDMI digital audio
 - [ ] analog stereo audio
 - [ ] native RGB timing output/header path
@@ -110,7 +134,7 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] board constraints and reproducible builds
 - [ ] automated per-profile LUT/LE, FF, BRAM, PLL/DSP, external-RAM and Fmax reports
 - [ ] explicit resource budgets for minimum A500 and A1200 targets
-- [ ] regression gates preventing accidental resource growth
+- [ ] regression gates preventing accidental resource growth without sacrificing Authentic compatibility
 
 ## M7 — AmiCore hardware / PCB
 
@@ -120,6 +144,7 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] AmiCore 1200 PCB
 - [ ] Mini-board feasibility/layout studies
 - [ ] Developer Board PCB
+- [ ] hardware Authentic/Turbo selection/recovery mechanism
 - [ ] two DE-9 joystick/mouse ports on full boards
 - [ ] serial connector/interface
 - [ ] parallel connector/interface
@@ -137,7 +162,7 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] RTC and battery-backed timekeeping
 - [ ] optional native RGB adapter/header
 - [ ] JTAG, UART, programming header and debug/test points
-- [ ] safe FPGA bitstream/firmware recovery path
+- [ ] safe FPGA bitstream/firmware recovery path defaults to Authentic mode
 - [ ] BOM and cost targets
 - [ ] manufacturing/Gerber files
 - [ ] bring-up documentation
@@ -179,13 +204,16 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] automated RTL simulation qualification
 - [ ] automated synthesis qualification
 - [ ] FPGA hardware smoke qualification
-- [ ] A500/OCS compatibility qualification
-- [ ] AGA/A1200 compatibility qualification
+- [ ] A500 Authentic game/demo compatibility matrix
+- [ ] A500 original-hardware timing comparison
+- [ ] AGA/A1200 Authentic software compatibility matrix
+- [ ] A1200 original-hardware timing comparison
 - [ ] physical floppy and Gotek qualification
 - [ ] serial/parallel/joystick qualification
 - [ ] HDMI/audio latency and timing qualification
 - [ ] Ethernet qualification
 - [ ] Wi-Fi/Bluetooth qualification where fitted
 - [ ] physical PCMCIA compatibility matrix with legacy cards
+- [ ] Authentic/Turbo isolation regression suite
 - [ ] long-running stability tests
 - [ ] cross-board deterministic compatibility suite
