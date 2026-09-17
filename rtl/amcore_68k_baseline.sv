@@ -1,5 +1,5 @@
-// AmiCore M1.16 — minimal clean-room 68000 execution baseline.
-// M1.16 adds JMP/JSR (An), xxx.W and xxx.L control flow.
+// AmiCore M1.17 — minimal clean-room 68000 execution baseline.
+// M1.17 begins LEA/PEA integration with the (An) control EA.
 module amcore_68k_baseline(
  input logic clk,input logic reset_n,input logic[2:0] irq_level,
  output logic[31:0] address,output logic[15:0] data_out,input logic[15:0] data_in,
@@ -49,6 +49,8 @@ module amcore_68k_baseline(
     else if(ir[15:12]==2&&ir[8:6]==1&&ir[5:3]==1)begin areg[ir[11:9]]<=areg[ir[2:0]];pc<=pc+2;state<=S_FETCH;end
     else if((ir&16'hFFF8)==16'h4E60)begin if(sr[13])begin usp<=areg[ir[2:0]];pc<=pc+2;state<=S_FETCH;end else enter_exception(8);end
     else if((ir&16'hFFF8)==16'h4E68)begin if(sr[13])begin areg[ir[2:0]]<=usp;pc<=pc+2;state<=S_FETCH;end else enter_exception(8);end
+    else if((ir&16'hF1F8)==16'h41D0)begin areg[ir[11:9]]<=areg[ir[2:0]];pc<=pc+2;state<=S_FETCH;end
+    else if((ir&16'hFFF8)==16'h4850)begin branch_return<=areg[ir[2:0]];pc<=pc+2;state<=S_BSR_PUSH_LO;end
     else if((ir&16'hFFF8)==16'h4ED0)begin pc<=areg[ir[2:0]];state<=S_FETCH;end
     else if((ir&16'hFFF8)==16'h4E90)begin branch_return<=pc+2;pc<=areg[ir[2:0]];state<=S_BSR_PUSH_LO;end
     else if(ir==16'h4EF8||ir==16'h4EB8)begin jump_is_jsr<=(ir==16'h4EB8);state<=S_JUMP_EXT_W;end
