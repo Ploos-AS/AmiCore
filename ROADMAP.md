@@ -46,8 +46,8 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [x] Bcc.s/Bcc.w conditional branch baseline with CCR condition qualification (M1.14)
 - [x] DBcc and register-direct Scc baseline with exhaustive condition-code and CPU execution qualification (M1.15)
 - [x] JMP/JSR control-flow and effective-address baseline: (An), xxx.W and xxx.L (M1.16)
-- [ ] LEA/PEA effective-address generation baseline (M1.17)
-- [ ] define CPU clock/timing controls required by Authentic/Turbo modes
+- [x] LEA/PEA effective-address generation baseline: (An), d16(An), xxx.W and xxx.L (M1.17)
+- [ ] define CPU clock/timing controls required by Authentic/Turbo modes (M1.18)
 
 ## M2 — A500 / OCS Authentic baseline
 
