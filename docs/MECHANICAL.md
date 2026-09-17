@@ -17,7 +17,12 @@ AmiCore treats the enclosure and PCB as one mechanical system. Connector positio
 
 Mechanical profiles are required for AmiCore 500 Mini, AmiCore 500, AmiCore 1200 Mini, AmiCore 1200 and the Developer Board.
 
-The full 500 and 1200 machines should visually reference the practical desktop/wedge ergonomics of classic Amiga systems without requiring a copied Commodore enclosure. The design must remain original and manufacturing-friendly.
+Each full-machine target has two mechanical paths:
+
+- **Classic-Fit:** a replacement motherboard intended to fit the corresponding original or reproduction A500/A1200 enclosure. Original mounting-hole, keyboard, expansion and external-port datums are compatibility constraints and must be measured/verified rather than guessed.
+- **External-Keyboard:** an optimized PCB and original AmiCore enclosure with the same functional port set, free from original motherboard geometry. Keyboard input is external, allowing a more compact and manufacturing-friendly case.
+
+The External-Keyboard 500 and 1200 machines should visually reference the practical desktop/wedge ergonomics of classic Amiga systems without copying a Commodore enclosure. The design must remain original and manufacturing-friendly.
 
 ## Keyboard integration
 
@@ -29,7 +34,8 @@ The CAD model must reserve the keyboard envelope, connector/header location, cab
 
 ## PCB/mechanical contract
 
-For every board profile record:
+For every board profile record. Classic-Fit profiles additionally maintain a measured compatibility datum set for the corresponding original/reproduction enclosure so PCB changes can be regression-checked against case fit:
+
 
 - PCB outline and thickness
 - mounting-hole coordinates and diameters
