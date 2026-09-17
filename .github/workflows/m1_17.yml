@@ -23,3 +23,7 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_17_cpu rtl/amcore_68k_baseline.sv sim/tb_m1_17_cpu_lea_pea.sv
           vvp /tmp/m1_17_cpu
+      - name: Qualify CPU extended LEA PEA effective addresses
+        run: |
+          iverilog -g2012 -o /tmp/m1_17_cpu_extended rtl/amcore_68k_baseline.sv sim/tb_m1_17_cpu_extended_ea.sv
+          vvp /tmp/m1_17_cpu_extended
