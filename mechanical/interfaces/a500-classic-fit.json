@@ -1,0 +1,71 @@
+{
+  "schema": "amicore.mechanical-datums.v1",
+  "profile": "a500-classic-fit",
+  "units": "mm",
+  "status": "partial-authoritative",
+  "coordinate_system": {
+    "status": "pending-board-measurement",
+    "origin": null,
+    "x_axis": null,
+    "y_axis": null,
+    "z_zero": null
+  },
+  "sources": [
+    {
+      "id": "commodore-a500-a2000-trm-expansion-drawing",
+      "type": "manufacturer-engineering-drawing",
+      "title": "A500 Expansion Connector Location",
+      "manufacturer": "Commodore",
+      "drawing_number": "3/26/3",
+      "revision": "1",
+      "date": "1987-04-02",
+      "release_note": "Pilot production release 1987-04-23",
+      "dimensions": "millimetres",
+      "verification": "authoritative-source"
+    },
+    {
+      "id": "commodore-a500-system-schematics",
+      "type": "manufacturer-schematic-and-board-layout",
+      "title": "System Schematics A500 Revisions 5, 6A, 7",
+      "part_number": "314981-02",
+      "date": "1989-08",
+      "verification": "authoritative-source"
+    },
+    {
+      "id": "raemixx500",
+      "type": "independent-replacement-board-cross-check",
+      "title": "Raemixx500",
+      "verification": "cross-check-only",
+      "note": "Project explicitly targeted drop-in screw-hole and I/O alignment but warns that its hand-redrawn board is not sub-millimetre accurate."
+    }
+  ],
+  "authoritative_dimensions": {
+    "expansion_connector_drawing": {
+      "drawing_number": "3/26/3",
+      "values_visible_mm": [324.0, 133.5, 103.75, 111.5, 134.6, 170.5, 14.5, 18.25, 10.25, 21.0, 2.5, 28.5],
+      "status": "captured-unmapped",
+      "note": "Values are transcribed from the manufacturer drawing but are intentionally not assigned to XY coordinates until drawing geometry is mapped unambiguously into the AmiCore coordinate system."
+    }
+  },
+  "datums": {
+    "pcb_outline": {"status": "needs-verification"},
+    "mounting_holes": {"status": "needs-verification"},
+    "keyboard": {"status": "needs-verification"},
+    "de9_mouse": {"status": "needs-verification"},
+    "de9_joystick": {"status": "needs-verification"},
+    "audio_left": {"status": "needs-verification"},
+    "audio_right": {"status": "needs-verification"},
+    "external_floppy": {"status": "needs-verification"},
+    "serial": {"status": "needs-verification"},
+    "parallel": {"status": "needs-verification"},
+    "power": {"status": "needs-verification"},
+    "native_video": {"status": "needs-verification"},
+    "internal_floppy": {"status": "needs-verification"},
+    "side_expansion": {
+      "status": "authoritative-drawing-found-needs-coordinate-mapping",
+      "source": "commodore-a500-a2000-trm-expansion-drawing"
+    },
+    "shield_keepouts": {"status": "needs-verification"},
+    "floppy_mechanical_envelope": {"status": "needs-verification"}
+  }
+}
