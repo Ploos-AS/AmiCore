@@ -13,8 +13,8 @@ module tb_m1_20_cpu_indexed;
   mem[16'h081]=16'h45F0; mem[16'h082]=16'h0804;
   // PEA d8(PC,D0.L): extension at 0x106, base 0x106, +16,+8 => 0x118.
   mem[16'h083]=16'h487B; mem[16'h084]=16'h0808;
-  // JMP d8(PC,D0.L): extension at 0x10C, +16,+0x34 => 0x150.
-  mem[16'h085]=16'h4EFB; mem[16'h086]=16'h0834;
+  // JMP d8(PC,D0.L): extension at 0x10A, +16,+0x36 => 0x150.
+  mem[16'h085]=16'h4EFB; mem[16'h086]=16'h0836;
   mem[16'h0A8]=16'h60FE; // 0x150 stable
   #20 reset_n=1;
   dut.areg[0]=32'h00000120;
