@@ -21,7 +21,17 @@ AmiCore should produce the smallest practical hardware implementations of two pr
 | AmiCore 500 | full-I/O A500-compatible standalone computer |
 | AmiCore 1200 Mini | minimum practical A1200-compatible hardware |
 | AmiCore 1200 | full-I/O A1200-compatible standalone computer |
+| AmiCore 500 Classic-Fit | drop-in/replacement-board target for original/reproduction A500 enclosures |
+| AmiCore 500 External-Keyboard | optimized PCB for AmiCore's own enclosure and external keyboard |
+| AmiCore 1200 Classic-Fit | drop-in/replacement-board target for original/reproduction A1200 enclosures and keyboard |
+| AmiCore 1200 External-Keyboard | optimized PCB for AmiCore's own enclosure and external keyboard |
 | AmiCore Developer Board | unconstrained development, measurement and qualification |
+
+## Physical-layout variants
+
+The full A500 and A1200 compatibility targets have two physical implementations. **Classic-Fit** boards prioritize mechanical replacement compatibility: PCB outline, mounting holes, keyboard integration and legacy connector locations should match the respective original/reproduction enclosure closely enough for a practical drop-in installation, subject to verified dimensions and connector availability. **External-Keyboard** boards carry the same machine-facing functional I/O but may rearrange components and connectors for a smaller, cleaner and more manufacturable AmiCore enclosure; these machines use an external keyboard while retaining the classic keyboard protocol/interface internally.
+
+Classic-Fit and External-Keyboard are PCB/mechanical variants, not separate chipset forks. They share the same board-independent RTL and compatibility profiles. Modern additions such as HDMI, Ethernet, USB/service and SD may require additional apertures on Classic-Fit installations; their exact placement remains part of the interface/mechanical freeze.
 
 ## Full-board baseline I/O
 
