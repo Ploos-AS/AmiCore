@@ -37,35 +37,145 @@
       "title": "Raemixx500",
       "verification": "cross-check-only",
       "note": "Project explicitly targeted drop-in screw-hole and I/O alignment but warns that its hand-redrawn board is not sub-millimetre accurate."
+    },
+    {
+      "id": "commodore-a500-service-manual-314981-01",
+      "type": "manufacturer-service-manual",
+      "title": "Service Manual A500",
+      "manufacturer": "Commodore",
+      "part_number": "314981-01",
+      "date": "1987-07",
+      "verification": "authoritative-source",
+      "note": "Contains I/O connector documentation, expansion 86-pin connector and PCB board layout."
     }
   ],
   "authoritative_dimensions": {
     "expansion_connector_drawing": {
       "drawing_number": "3/26/3",
-      "values_visible_mm": [324.0, 133.5, 103.75, 111.5, 134.6, 170.5, 14.5, 18.25, 10.25, 21.0, 2.5, 28.5],
+      "values_visible_mm": [
+        324,
+        133.5,
+        103.75,
+        111.5,
+        134.6,
+        170.5,
+        14.5,
+        18.25,
+        10.25,
+        21,
+        2.5,
+        28.5
+      ],
       "status": "captured-unmapped",
       "note": "Values are transcribed from the manufacturer drawing but are intentionally not assigned to XY coordinates until drawing geometry is mapped unambiguously into the AmiCore coordinate system."
     }
   },
   "datums": {
-    "pcb_outline": {"status": "needs-verification"},
-    "mounting_holes": {"status": "needs-verification"},
-    "keyboard": {"status": "needs-verification"},
-    "de9_mouse": {"status": "needs-verification"},
-    "de9_joystick": {"status": "needs-verification"},
-    "audio_left": {"status": "needs-verification"},
-    "audio_right": {"status": "needs-verification"},
-    "external_floppy": {"status": "needs-verification"},
-    "serial": {"status": "needs-verification"},
-    "parallel": {"status": "needs-verification"},
-    "power": {"status": "needs-verification"},
-    "native_video": {"status": "needs-verification"},
-    "internal_floppy": {"status": "needs-verification"},
+    "pcb_outline": {
+      "status": "needs-verification"
+    },
+    "mounting_holes": {
+      "status": "needs-verification",
+      "evidence": {
+        "source": "A500 system schematics 314981-02",
+        "references": [
+          "MT1",
+          "MT2",
+          "MT4",
+          "MT5",
+          "MT6",
+          "MT7"
+        ],
+        "status": "electrical/grounded-hole references identified; coordinates pending board-layout mapping"
+      }
+    },
+    "keyboard": {
+      "status": "needs-verification"
+    },
+    "de9_mouse": {
+      "status": "needs-verification",
+      "evidence": {
+        "source": "314981-02",
+        "connector": "CN1",
+        "mount_reference": "MT1"
+      }
+    },
+    "de9_joystick": {
+      "status": "needs-verification",
+      "evidence": {
+        "source": "314981-02",
+        "connector": "CN2",
+        "mount_reference": "MT2"
+      }
+    },
+    "audio_left": {
+      "status": "needs-verification"
+    },
+    "audio_right": {
+      "status": "needs-verification"
+    },
+    "external_floppy": {
+      "status": "needs-verification",
+      "evidence": {
+        "source": "314981-02",
+        "connector": "CN7",
+        "mount_reference": "MT6"
+      }
+    },
+    "serial": {
+      "status": "needs-verification",
+      "evidence": {
+        "source": "314981-02",
+        "connector": "CN5",
+        "mount_reference": "MT4"
+      }
+    },
+    "parallel": {
+      "status": "needs-verification",
+      "evidence": {
+        "source": "314981-02",
+        "connector": "CN6",
+        "mount_reference": "MT5"
+      }
+    },
+    "power": {
+      "status": "needs-verification",
+      "evidence": {
+        "source": "314981-02",
+        "connector": "CN12",
+        "description": "5-pin square power input"
+      }
+    },
+    "native_video": {
+      "status": "needs-verification",
+      "evidence": {
+        "source": "314981-02",
+        "connector": "CN9",
+        "mount_reference": "MT7"
+      }
+    },
+    "internal_floppy": {
+      "status": "needs-verification",
+      "evidence": {
+        "source": "314981-02",
+        "connector": "CN8",
+        "description": "4-pin SIL floppy power also identified; signal connector coordinate still pending layout mapping"
+      }
+    },
     "side_expansion": {
       "status": "authoritative-drawing-found-needs-coordinate-mapping",
-      "source": "commodore-a500-a2000-trm-expansion-drawing"
+      "source": "commodore-a500-a2000-trm-expansion-drawing",
+      "evidence": {
+        "drawing": "3/26/3 rev 1",
+        "units": "mm",
+        "status": "source geometry identified; XY mapping still gated on stable PCB origin"
+      }
     },
-    "shield_keepouts": {"status": "needs-verification"},
-    "floppy_mechanical_envelope": {"status": "needs-verification"}
+    "shield_keepouts": {
+      "status": "needs-verification"
+    },
+    "floppy_mechanical_envelope": {
+      "status": "needs-verification"
+    }
   }
 }
