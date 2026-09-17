@@ -9,10 +9,6 @@ module tb_m1_17_cpu_lea_pea;
   32'h102:data_in=16'h4851; // PEA (A1)
   32'h104:data_in=16'h60fe; // stable landing
   default:data_in=16'h4e71; endcase end
- always_ff @(posedge clk) begin
-  // The core presents the write address/data combinationally in the push
-  // state and consumes ack on this edge. Sample after NBA updates below.
- end
  always @(negedge clk) begin
   if(write && address==32'h1fe && data_out==16'h1234) saw_lo=1;
   if(write && address==32'h1fc && data_out==16'h0000) saw_hi=1;
@@ -21,7 +17,9 @@ module tb_m1_17_cpu_lea_pea;
   repeat(2) @(posedge clk);reset_n=1;
   wait(pc==32'h100);#1; dut.areg[0]=32'h00001234; dut.sr[4:0]=5'b10101;
   fork begin repeat(200) @(posedge clk);$fatal(1,"timeout pc=%h a7=%h",pc,a7);end join_none
-  wait(pc==32'h104);@(negedge clk);#1;
+  // PEA advances PC before its two stack bus cycles complete.  Wait for the
+  // architectural stack result, then sample after the final write phase.
+  wait(pc==32'h104 && a7==32'h000001fc);@(negedge clk);#1;
   if(dut.areg[1]!==32'h00001234)$fatal(1,"LEA result wrong: %h",dut.areg[1]);
   if(!saw_lo||!saw_hi)$fatal(1,"PEA push missing lo=%b hi=%b",saw_lo,saw_hi);
   if(a7!==32'h000001fc)$fatal(1,"PEA A7 wrong: %h",a7);
