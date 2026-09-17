@@ -15,3 +15,7 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_19_pc_relative rtl/amcore_ea.sv sim/tb_m1_19_pc_relative_ea.sv
           vvp /tmp/m1_19_pc_relative
+      - name: Qualify LEA PEA JMP JSR d16(PC) control semantics
+        run: |
+          iverilog -g2012 -o /tmp/m1_19_pc_control rtl/amcore_pc_relative_control.sv sim/tb_m1_19_pc_relative_control.sv
+          vvp /tmp/m1_19_pc_control
