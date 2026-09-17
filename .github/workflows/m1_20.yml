@@ -13,3 +13,7 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_20_indexed rtl/amcore_ea.sv sim/tb_m1_20_indexed_ea.sv
           vvp /tmp/m1_20_indexed
+      - name: Qualify indexed addressing in baseline CPU
+        run: |
+          iverilog -g2012 -o /tmp/m1_20_cpu rtl/amcore_68k_baseline.sv sim/tb_m1_20_cpu_indexed.sv
+          vvp /tmp/m1_20_cpu
