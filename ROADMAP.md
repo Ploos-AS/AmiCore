@@ -62,7 +62,8 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] Blitter and nasty-mode timing qualification
 - [ ] PAL/NTSC raster timing qualification
 - [ ] A500 memory map and machine profile
-- [ ] keyboard protocol/interface
+- [ ] classic A500 keyboard protocol/interface
+- [ ] dedicated physical A500 keyboard port/header and electrical qualification
 - [ ] two DE-9 joystick/mouse interfaces
 - [ ] serial interface
 - [ ] parallel interface
@@ -101,7 +102,8 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] serial and parallel interfaces
 - [ ] two DE-9 joystick/mouse interfaces
 - [ ] physical floppy/Gotek support
-- [ ] keyboard interface
+- [ ] classic A1200 keyboard protocol/interface
+- [ ] dedicated physical/internal A1200 keyboard connector and original/reproduction keyboard qualification
 - [ ] Gayle-compatible PCMCIA controller/register model
 - [ ] PCMCIA memory and I/O address mapping
 - [ ] PCMCIA card detect, reset, interrupt and status semantics
@@ -140,6 +142,7 @@ The same board-independent RTL architecture should scale across Mini, full-board
 ## M7 — AmiCore hardware / PCB
 
 - [ ] common board-level electrical/interface specification
+- [ ] keyboard connector/pinout/electrical specification for 500 and 1200 profiles
 - [ ] reference KiCad schematics
 - [ ] AmiCore 500 PCB
 - [ ] AmiCore 1200 PCB
@@ -167,6 +170,25 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] BOM and cost targets
 - [ ] manufacturing/Gerber files
 - [ ] bring-up documentation
+
+## M7.1 — Mechanical / CAD / enclosure
+
+- [ ] define PCB outlines, keep-outs, connector datum positions and mounting-hole coordinates
+- [ ] establish parametric mechanical CAD source and STEP interchange workflow
+- [ ] AmiCore 500 enclosure: top/bottom shell, standoffs, ventilation and service access
+- [ ] AmiCore 1200 enclosure: top/bottom shell, standoffs, ventilation and service access
+- [ ] AmiCore 500 Mini enclosure
+- [ ] AmiCore 1200 Mini enclosure
+- [ ] Developer Board enclosure/test-frame option
+- [ ] keyboard opening, retention and cable-routing design
+- [ ] investigate original/reproduction A1200 keyboard and enclosure fit compatibility
+- [ ] connector cut-outs for HDMI, USB, Ethernet, DE-9, serial, parallel, audio, SD, floppy/Gotek and expansion
+- [ ] model buttons, LEDs/light-pipes and removable service panels where useful
+- [ ] define FDM tolerances, wall thickness, clearances, screw sizes and heat-set inserts
+- [ ] export versioned STEP plus printable STL/3MF artifacts
+- [ ] document print orientation, supports, assembly and hardware
+- [ ] mechanical fit-check against PCB STEP model before board/enclosure freeze
+- [ ] maintain enclosure/PCB interface dimensions as CI-checkable data where practical
 
 ## M8 — Ethernet, wireless and expansion
 
