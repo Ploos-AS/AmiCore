@@ -139,6 +139,20 @@ The same board-independent RTL architecture should scale across Mini, full-board
 - [ ] explicit resource budgets for minimum A500 and A1200 targets
 - [ ] regression gates preventing accidental resource growth without sacrificing Authentic compatibility
 
+## TBD — Interface decisions before PCB/mechanical freeze
+
+These items are intentionally **TO BE DECIDED** before the AmiCore I/O/interface specification is frozen and before final KiCad placement and enclosure CAD are locked.
+
+- [ ] **TBD:** physical native RGB/video connector strategy on full boards (original-style connector vs dedicated modern/header solution)
+- [ ] **TBD:** analog audio connector strategy (RCA/phono, 3.5 mm, or both)
+- [ ] **TBD:** final power architecture and connector (including USB-C, power switch, protection and recovery behaviour)
+- [ ] **TBD:** exact physical keyboard connector(s), pinout and internal/external arrangement for AmiCore 500 and AmiCore 1200
+- [ ] **TBD:** exact external Amiga floppy-drive connector implementation and mechanical placement
+- [ ] **TBD:** exact physical A500 side-expansion connector implementation
+- [ ] **TBD:** exact physical A1200 expansion and clock-port connector implementation
+- [ ] Review all remaining legacy connectors and explicitly classify each as mandatory, optional, internal-header-only or omitted on every board profile
+- [ ] Freeze the I/O/interface specification only after the decisions above are documented
+
 ## M7 — AmiCore hardware / PCB
 
 - [ ] common board-level electrical/interface specification
