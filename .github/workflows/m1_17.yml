@@ -15,3 +15,7 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_17_ea rtl/amcore_ea.sv sim/tb_m1_17_ea.sv
           vvp /tmp/m1_17_ea
+      - name: Qualify LEA PEA execution primitive
+        run: |
+          iverilog -g2012 -o /tmp/m1_17_lea_pea rtl/amcore_lea_pea.sv sim/tb_m1_17_lea_pea.sv
+          vvp /tmp/m1_17_lea_pea
