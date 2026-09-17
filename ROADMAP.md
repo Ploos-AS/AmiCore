@@ -160,8 +160,11 @@ These items are intentionally **TO BE DECIDED** before the AmiCore I/O/interface
 - [ ] common board-level electrical/interface specification
 - [ ] keyboard connector/pinout/electrical specification for 500 and 1200 profiles
 - [ ] reference KiCad schematics
-- [ ] AmiCore 500 PCB
-- [ ] AmiCore 1200 PCB
+- [ ] AmiCore 500 Classic-Fit PCB: replacement motherboard matching original A500 case, mounting and external connector locations where practical
+- [ ] AmiCore 1200 Classic-Fit PCB: replacement motherboard matching original A1200 case, mounting, keyboard and external connector locations where practical
+- [ ] AmiCore 500 External-Keyboard PCB: optimized original AmiCore enclosure layout with the same functional I/O set and external keyboard
+- [ ] AmiCore 1200 External-Keyboard PCB: optimized original AmiCore enclosure layout with the same functional I/O set and external keyboard
+- [ ] keep Classic-Fit and External-Keyboard variants on the same board-independent RTL/profile architecture
 - [ ] Mini-board feasibility/layout studies
 - [ ] Developer Board PCB
 - [ ] hardware Authentic/Turbo selection/recovery mechanism
@@ -191,8 +194,10 @@ These items are intentionally **TO BE DECIDED** before the AmiCore I/O/interface
 
 - [ ] define PCB outlines, keep-outs, connector datum positions and mounting-hole coordinates
 - [ ] establish parametric mechanical CAD source and STEP interchange workflow
-- [ ] AmiCore 500 enclosure: top/bottom shell, standoffs, ventilation and service access
-- [ ] AmiCore 1200 enclosure: top/bottom shell, standoffs, ventilation and service access
+- [ ] qualify AmiCore 500 Classic-Fit PCB against original/reproduction A500 enclosure geometry and connector apertures
+- [ ] qualify AmiCore 1200 Classic-Fit PCB against original/reproduction A1200 enclosure, keyboard and connector geometry
+- [ ] AmiCore 500 External-Keyboard enclosure: optimized top/bottom shell, standoffs, ventilation and service access
+- [ ] AmiCore 1200 External-Keyboard enclosure: optimized top/bottom shell, standoffs, ventilation and service access
 - [ ] AmiCore 500 Mini enclosure
 - [ ] AmiCore 1200 Mini enclosure
 - [ ] Developer Board enclosure/test-frame option
