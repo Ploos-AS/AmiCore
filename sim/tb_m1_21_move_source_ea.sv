@@ -17,8 +17,8 @@ module tb_m1_21_move_source_ea;
   mem[16'h083]=16'h2430; mem[16'h084]=16'h18E4;
   // MOVE.L d16(PC),D3: extension at 0x10C, +0x104 => 0x210.
   mem[16'h085]=16'h263A; mem[16'h086]=16'h0104;
-  // MOVE.L d8(PC,D1.L),D4: extension at 0x110, +4 + 0x108 => 0x220.
-  mem[16'h087]=16'h283B; mem[16'h088]=16'h1908;
+  // MOVE.L d8(PC,D1.L),D4: extension at 0x110; PC base 0x110 + D1(4) + displacement 0x0C = 0x120? moved data target 0x220 with signed d8 0x0C impossible; use negative D1-independent target nearby 0x140.
+  mem[16'h087]=16'h283B; mem[16'h088]=16'h1830;
   // MOVE.L $0180.W,D5; MOVE.L $00000190.L,D6.
   mem[16'h089]=16'h2A38; mem[16'h08A]=16'h0240;
   mem[16'h08B]=16'h2C39; mem[16'h08C]=16'h0000; mem[16'h08D]=16'h0250;
@@ -31,7 +31,7 @@ module tb_m1_21_move_source_ea;
   mem[16'h100]=16'h1234; mem[16'h101]=16'h5678; // 0x200
   mem[16'h104]=16'h89AB; mem[16'h105]=16'hCDEF; // 0x208
   mem[16'h108]=16'h0BAD; mem[16'h109]=16'hF00D; // 0x210
-  mem[16'h110]=16'hCAFE; mem[16'h111]=16'hBABE; // 0x220
+  mem[16'h0A2]=16'hCAFE; mem[16'h0A3]=16'hBABE; // 0x144
   mem[16'h120]=16'h1357; mem[16'h121]=16'h9BDF; // 0x240
   mem[16'h128]=16'h2468; mem[16'h129]=16'hACE0; // 0x250
   #20 reset_n=1; @(posedge clk); #1; dut.areg[0]=32'h00000220;
