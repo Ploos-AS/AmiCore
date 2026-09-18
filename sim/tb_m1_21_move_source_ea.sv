@@ -13,7 +13,7 @@ module tb_m1_21_move_source_ea;
   // MOVE.L d8(A0,D1.W),D2 ; after first MOVE D1.W=0x5678, use negative displacement
   // is intentionally not used here: reset D1 via MOVEQ before indexed qualification.
   mem[16'h082]=16'h7204;
-  // MOVE.L d8(A0,D1.L),D2 => A0 0x120 + 4 + 0xE4 = 0x208.
+  // MOVE.L d8(A0,D1.L),D2 => A0 0x220 + 4 - 0x1C = 0x208.
   mem[16'h083]=16'h2430; mem[16'h084]=16'h18E4;
   // MOVE.L d16(PC),D3: extension at 0x10C, +0x104 => 0x210.
   mem[16'h085]=16'h263A; mem[16'h086]=16'h0104;
@@ -23,8 +23,8 @@ module tb_m1_21_move_source_ea;
   mem[16'h089]=16'h2A38; mem[16'h08A]=16'h0240;
   mem[16'h08B]=16'h2C39; mem[16'h08C]=16'h0000; mem[16'h08D]=16'h0250;
   // MOVE.L D1,d16(A0); MOVE.L D2,d8(A0,D1.L); absolute.W/L destinations.
-  mem[16'h08E]=16'h2141; mem[16'h08F]=16'h0160;
-  mem[16'h090]=16'h2182; mem[16'h091]=16'h1960;
+  mem[16'h08E]=16'h2141; mem[16'h08F]=16'h0060;
+  mem[16'h090]=16'h2182; mem[16'h091]=16'h1840;
   mem[16'h092]=16'h21C3; mem[16'h093]=16'h0280;
   mem[16'h094]=16'h23C4; mem[16'h095]=16'h0000; mem[16'h096]=16'h0290;
   mem[16'h097]=16'h60FE;
@@ -34,7 +34,7 @@ module tb_m1_21_move_source_ea;
   mem[16'h110]=16'hCAFE; mem[16'h111]=16'hBABE; // 0x220
   mem[16'h120]=16'h1357; mem[16'h121]=16'h9BDF; // 0x240
   mem[16'h128]=16'h2468; mem[16'h129]=16'hACE0; // 0x250
-  #20 reset_n=1; @(posedge clk); #1; dut.areg[0]=32'h00000120;
+  #20 reset_n=1; @(posedge clk); #1; dut.areg[0]=32'h00000220;
   for(cycles=0;cycles<350;cycles=cycles+1) begin
    @(posedge clk); #1;
    if(pc==32'h12E) begin
@@ -44,7 +44,7 @@ module tb_m1_21_move_source_ea;
     if(dut.dreg[5]!==32'h13579BDF) $fatal(1,"absolute.W MOVE D5=%h",dut.dreg[5]);
     if(dut.dreg[6]!==32'h2468ACE0) $fatal(1,"absolute.L MOVE D6=%h",dut.dreg[6]);
     if({mem[16'h140],mem[16'h141]}!==32'h00000004) $fatal(1,"d16 destination=%h",{mem[16'h0C0],mem[16'h0C1]});
-    if({mem[16'h142],mem[16'h143]}!==32'h89ABCDEF) $fatal(1,"indexed destination=%h",{mem[16'h0B2],mem[16'h0B3]});
+    if({mem[16'h132],mem[16'h133]}!==32'h89ABCDEF) $fatal(1,"indexed destination=%h",{mem[16'h0B2],mem[16'h0B3]});
     if({mem[16'h140],mem[16'h141]}!==32'h0BADF00D) $fatal(1,"abs.W destination=%h",{mem[16'h0D0],mem[16'h0D1]});
     if({mem[16'h148],mem[16'h149]}!==32'hCAFEBABE) $fatal(1,"abs.L destination=%h",{mem[16'h0D8],mem[16'h0D9]});
     $display("PASS: M1.21 MOVE.L source displacement/indexed/PC-relative EAs");
