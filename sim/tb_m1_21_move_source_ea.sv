@@ -30,7 +30,9 @@ module tb_m1_21_move_source_ea;
    if(pc==32'h11C) begin
     if(dut.dreg[2]!==32'h89ABCDEF) $fatal(1,"indexed An MOVE D2=%h",dut.dreg[2]);
     if(dut.dreg[3]!==32'h0BADF00D) $fatal(1,"PC d16 MOVE D3=%h",dut.dreg[3]);
-    if(dut.dreg[4]!==32'hCAFEBABE) $fatal(1,"PC indexed MOVE D4=%h",dut.dreg[4]);\n    if(dut.dreg[5]!==32'h13579BDF) $fatal(1,"absolute.W MOVE D5=%h",dut.dreg[5]);\n    if(dut.dreg[6]!==32'h2468ACE0) $fatal(1,"absolute.L MOVE D6=%h",dut.dreg[6]);
+    if(dut.dreg[4]!==32'hCAFEBABE) $fatal(1,"PC indexed MOVE D4=%h",dut.dreg[4]);
+    if(dut.dreg[5]!==32'h13579BDF) $fatal(1,"absolute.W MOVE D5=%h",dut.dreg[5]);
+    if(dut.dreg[6]!==32'h2468ACE0) $fatal(1,"absolute.L MOVE D6=%h",dut.dreg[6]);
     $display("PASS: M1.21 MOVE.L source displacement/indexed/PC-relative EAs");
     $finish;
    end
