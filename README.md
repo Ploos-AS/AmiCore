@@ -103,6 +103,10 @@ docs/         Architecture, hardware and qualification documentation
 
 M0 foundation is established and M1 CPU/core infrastructure is under active qualification. Later milestones build the OCS A500 target first, then ECS/AGA and the A1200 target, followed by optimized FPGA and custom PCB profiles.
 
+## Manufacturing
+
+For fabrication files, release-package conventions, manufacturer choices, and funding/affiliate disclosure, see [MANUFACTURING.md](MANUFACTURING.md). Released hardware remains vendor-neutral and may be manufactured by any suitable PCB manufacturer.
+
 ## License
 
 Hardware design materials — including schematics, PCB layouts, manufacturing files, and HDL/RTL that describes hardware — are licensed under the **CERN Open Hardware Licence Version 2 - Permissive (CERN-OHL-P-2.0)**. See [LICENSE-HARDWARE](LICENSE-HARDWARE).
