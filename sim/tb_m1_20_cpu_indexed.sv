@@ -22,13 +22,13 @@ module tb_m1_20_cpu_indexed;
   for(cycles=0;cycles<300;cycles=cycles+1) begin
    @(posedge clk); #1;
    if(pc==32'h150) begin
-    if(dut.areg[2]!==32'h134) $fatal(1,"LEA indexed A2=%h",dut.areg[2]);
+    if(dut.areg[2]!==32'h134) $fatal(1,"LEA indexed A2=%h pc=%h a0=%h d0=%h",dut.areg[2],pc,dut.areg[0],d0);
     if(a7!==32'h1FC) $fatal(1,"stack pointer=%h",a7);
     if(mem[16'h0FE]!==16'h0000 || mem[16'h0FF]!==16'h0118) $fatal(1,"PEA indexed stack=%h%h",mem[16'h0FE],mem[16'h0FF]);
     $display("PASS: M1.20 baseline CPU indexed LEA/PEA/JMP");
     $finish;
    end
   end
-  $fatal(1,"timeout pc=%h a7=%h",pc,a7);
+  $fatal(1,"timeout pc=%h a7=%h a0=%h a2=%h d0=%h state=%0d ir=%h",pc,a7,dut.areg[0],dut.areg[2],d0,dut.state,dut.ir);
  end
 endmodule
