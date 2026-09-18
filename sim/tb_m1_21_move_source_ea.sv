@@ -4,7 +4,7 @@ module tb_m1_21_move_source_ea;
  logic[15:0] mem[0:511]; integer cycles; always #5 clk=~clk;
  amcore_68k_baseline dut(.*);
  always_comb begin ack=read||write; data_in=mem[address[9:1]]; end
- always_ff @(posedge clk) if(write) mem[address[9:1]]<=data_out;
+ always_ff @(posedge clk) if(write) begin mem[address[9:1]]<=data_out; $display("M1.21 WRITE pc=%h ir=%h state=%0d mem_ea=%h address=%h data=%h",pc,dut.ir,dut.state,dut.mem_ea,address,data_out); end
  initial begin
   for(cycles=0;cycles<512;cycles=cycles+1) mem[cycles]=0;
   mem[0]=16'h0000; mem[1]=16'h0200; mem[2]=16'h0000; mem[3]=16'h0100;
