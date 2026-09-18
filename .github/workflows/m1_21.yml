@@ -13,3 +13,7 @@ jobs:
         run: |
           iverilog -g2012 -o /tmp/m1_21_move rtl/amcore_68k_baseline.sv sim/tb_m1_21_move_source_ea.sv
           vvp /tmp/m1_21_move
+      - name: Qualify MOVEA.L source effective addresses
+        run: |
+          iverilog -g2012 -o /tmp/m1_21_movea rtl/amcore_68k_baseline.sv sim/tb_m1_21_movea_source_ea.sv
+          vvp /tmp/m1_21_movea
