@@ -51,26 +51,26 @@ module amcore_68k_baseline(
     else if((ir&16'hFFF8)==16'h4E60)begin if(sr[13])begin usp<=areg[ir[2:0]];pc<=pc+2;state<=S_FETCH;end else enter_exception(8);end
     else if((ir&16'hFFF8)==16'h4E68)begin if(sr[13])begin areg[ir[2:0]]<=usp;pc<=pc+2;state<=S_FETCH;end else enter_exception(8);end
     else if((ir&16'hF1F8)==16'h41D0)begin areg[ir[11:9]]<=areg[ir[2:0]];pc<=pc+2;state<=S_FETCH;end
-    else if((ir&16'hF1F8)==16'h41E8)begin ea_is_pea<=0;ea_is_absw<=0;ea_dest_areg<=ir[11:9];ea_base<=areg[ir[2:0]];state<=S_EA_EXT_W;end
+    else if((ir&16'hF1F8)==16'h41E8)begin ea_is_pea<=0;ea_is_absw<=0;ea_is_indexed<=0;ea_dest_areg<=ir[11:9];ea_base<=areg[ir[2:0]];state<=S_EA_EXT_W;end
     else if((ir&16'hF1F8)==16'h41F0)begin ea_is_pea<=0;ea_is_absw<=0;ea_is_indexed<=1;ea_dest_areg<=ir[11:9];ea_base<=areg[ir[2:0]];state<=S_EA_EXT_W;end
     else if((ir&16'hF1FF)==16'h41FB)begin ea_is_pea<=0;ea_is_absw<=0;ea_is_indexed<=1;ea_dest_areg<=ir[11:9];ea_base<=pc+2;state<=S_EA_EXT_W;end
-    else if((ir&16'hF1FF)==16'h41FA)begin ea_is_pea<=0;ea_is_absw<=0;ea_dest_areg<=ir[11:9];ea_base<=pc+2;state<=S_EA_EXT_W;end
-    else if((ir&16'hF1FF)==16'h41F8)begin ea_is_pea<=0;ea_is_absw<=1;ea_dest_areg<=ir[11:9];ea_base<=0;state<=S_EA_EXT_W;end
-    else if((ir&16'hF1FF)==16'h41F9)begin ea_is_pea<=0;ea_dest_areg<=ir[11:9];state<=S_EA_EXT_HI;end
+    else if((ir&16'hF1FF)==16'h41FA)begin ea_is_pea<=0;ea_is_absw<=0;ea_is_indexed<=0;ea_dest_areg<=ir[11:9];ea_base<=pc+2;state<=S_EA_EXT_W;end
+    else if((ir&16'hF1FF)==16'h41F8)begin ea_is_pea<=0;ea_is_absw<=1;ea_is_indexed<=0;ea_dest_areg<=ir[11:9];ea_base<=0;state<=S_EA_EXT_W;end
+    else if((ir&16'hF1FF)==16'h41F9)begin ea_is_pea<=0;ea_is_indexed<=0;ea_dest_areg<=ir[11:9];state<=S_EA_EXT_HI;end
     else if((ir&16'hFFF8)==16'h4850)begin branch_return<=areg[ir[2:0]];pc<=pc+2;state<=S_BSR_PUSH_LO;end
     else if((ir&16'hFFF8)==16'h4870)begin ea_is_pea<=1;ea_is_absw<=0;ea_is_indexed<=1;ea_base<=areg[ir[2:0]];state<=S_EA_EXT_W;end
     else if(ir==16'h487B)begin ea_is_pea<=1;ea_is_absw<=0;ea_is_indexed<=1;ea_base<=pc+2;state<=S_EA_EXT_W;end
-    else if((ir&16'hFFF8)==16'h4868)begin ea_is_pea<=1;ea_is_absw<=0;ea_base<=areg[ir[2:0]];state<=S_EA_EXT_W;end
-    else if(ir==16'h487A)begin ea_is_pea<=1;ea_is_absw<=0;ea_base<=pc+2;state<=S_EA_EXT_W;end
-    else if(ir==16'h4878)begin ea_is_pea<=1;ea_is_absw<=1;ea_base<=0;state<=S_EA_EXT_W;end
-    else if(ir==16'h4879)begin ea_is_pea<=1;state<=S_EA_EXT_HI;end
+    else if((ir&16'hFFF8)==16'h4868)begin ea_is_pea<=1;ea_is_absw<=0;ea_is_indexed<=0;ea_base<=areg[ir[2:0]];state<=S_EA_EXT_W;end
+    else if(ir==16'h487A)begin ea_is_pea<=1;ea_is_absw<=0;ea_is_indexed<=0;ea_base<=pc+2;state<=S_EA_EXT_W;end
+    else if(ir==16'h4878)begin ea_is_pea<=1;ea_is_absw<=1;ea_is_indexed<=0;ea_base<=0;state<=S_EA_EXT_W;end
+    else if(ir==16'h4879)begin ea_is_pea<=1;ea_is_indexed<=0;state<=S_EA_EXT_HI;end
     else if((ir&16'hFFF8)==16'h4ED0)begin pc<=areg[ir[2:0]];state<=S_FETCH;end
     else if((ir&16'hFFF8)==16'h4E90)begin branch_return<=pc+2;pc<=areg[ir[2:0]];state<=S_BSR_PUSH_LO;end
     else if((ir&16'hFFF8)==16'h4EF0||(ir&16'hFFF8)==16'h4EB0)begin jump_is_jsr<=((ir&16'hFFF8)==16'h4EB0);jump_is_pc_relative<=0;jump_is_indexed<=1;ea_base<=areg[ir[2:0]];state<=S_JUMP_EXT_W;end
     else if(ir==16'h4EFB||ir==16'h4EBB)begin jump_is_jsr<=(ir==16'h4EBB);jump_is_pc_relative<=1;jump_is_indexed<=1;ea_base<=pc+2;state<=S_JUMP_EXT_W;end
-    else if(ir==16'h4EFA||ir==16'h4EBA)begin jump_is_jsr<=(ir==16'h4EBA);jump_is_pc_relative<=1;state<=S_JUMP_EXT_W;end
-    else if(ir==16'h4EF8||ir==16'h4EB8)begin jump_is_jsr<=(ir==16'h4EB8);jump_is_pc_relative<=0;state<=S_JUMP_EXT_W;end
-    else if(ir==16'h4EF9||ir==16'h4EB9)begin jump_is_jsr<=(ir==16'h4EB9);jump_is_pc_relative<=0;state<=S_JUMP_EXT_HI;end
+    else if(ir==16'h4EFA||ir==16'h4EBA)begin jump_is_jsr<=(ir==16'h4EBA);jump_is_pc_relative<=1;jump_is_indexed<=0;state<=S_JUMP_EXT_W;end
+    else if(ir==16'h4EF8||ir==16'h4EB8)begin jump_is_jsr<=(ir==16'h4EB8);jump_is_pc_relative<=0;jump_is_indexed<=0;state<=S_JUMP_EXT_W;end
+    else if(ir==16'h4EF9||ir==16'h4EB9)begin jump_is_jsr<=(ir==16'h4EB9);jump_is_pc_relative<=0;jump_is_indexed<=0;state<=S_JUMP_EXT_HI;end
     else if(ir[15:12]==2&&ir[8:6]==0&&(ir[5:3]==2||ir[5:3]==3||ir[5:3]==4))begin mem_dreg<=ir[11:9];mem_areg<=ir[2:0];mem_update<=0;if(ir[5:3]==4)begin mem_ea<=areg[ir[2:0]]-4;areg[ir[2:0]]<=areg[ir[2:0]]-4;mem_update<=2;end else begin mem_ea<=areg[ir[2:0]];if(ir[5:3]==3)mem_update<=1;end state<=S_MEM_RD_HI;end
     else if(ir[15:12]==2&&ir[5:3]==0&&(ir[8:6]==2||ir[8:6]==3||ir[8:6]==4))begin mem_value<=dreg[ir[2:0]];mem_areg<=ir[11:9];mem_update<=0;sr[3]<=dreg[ir[2:0]][31];sr[2]<=(dreg[ir[2:0]]==0);sr[1:0]<=0;if(ir[8:6]==4)begin mem_ea<=areg[ir[11:9]]-4;areg[ir[11:9]]<=areg[ir[11:9]]-4;mem_update<=2;end else begin mem_ea<=areg[ir[11:9]];if(ir[8:6]==3)mem_update<=1;end state<=S_MEM_WR_HI;end
     else if(ir==16'h4E75)state<=S_RTS_POP_HI;else if(ir==16'h46FC)begin if(sr[13])state<=S_IMM_SR;else enter_exception(8);end else if(ir==16'h4E73)begin if(sr[13])state<=S_RTE_POP_SR;else enter_exception(8);end else enter_exception(4);
