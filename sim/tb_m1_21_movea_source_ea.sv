@@ -18,7 +18,7 @@ module tb_m1_21_movea_source_ea;
   mem[16'h100]=16'h1111; mem[16'h101]=16'h2222;
   mem[16'h108]=16'h3333; mem[16'h109]=16'h4444;
   mem[16'h120]=16'h5555; mem[16'h121]=16'h6666;
-  mem[16'h122]=16'h7777; mem[16'h123]=16'h8888;
+  mem[16'h114]=16'h7777; mem[16'h115]=16'h8888;
   #20 reset_n=1; @(posedge clk); #1; dut.areg[0]=32'h00000220; dut.dreg[1]=32'h00000004; dut.sr=16'h2715;
   for(cycles=0;cycles<300;cycles=cycles+1) begin @(posedge clk); #1;
    if(pc==32'h11A) begin
