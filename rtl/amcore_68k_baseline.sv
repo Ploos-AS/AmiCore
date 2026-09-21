@@ -7,7 +7,7 @@ module amcore_68k_baseline(
  output logic[31:0] pc,output logic[31:0] a7,output logic[15:0] sr,
  output logic halted,output logic exception,output logic[7:0] exception_vector);
  typedef enum logic[5:0]{S_RESET_SSP_HI,S_RESET_SSP_LO,S_RESET_PC_HI,S_RESET_PC_LO,S_FETCH,S_EXEC,S_IMM_SR,S_BRANCH_EXT,S_BSR_PUSH_LO,S_BSR_PUSH_HI,S_RTS_POP_HI,S_RTS_POP_LO,S_EXC_PUSH_PC_LO,S_EXC_PUSH_PC_HI,S_EXC_PUSH_SR,S_EXC_VEC_HI,S_EXC_VEC_LO,S_RTE_POP_SR,S_RTE_POP_PC_HI,S_RTE_POP_PC_LO,S_MEM_RD_HI,S_MEM_RD_LO,S_MEM_WR_HI,S_MEM_WR_LO,S_HALT,S_DBCC_EXT,S_JUMP_EXT_W,S_JUMP_EXT_HI,S_JUMP_EXT_LO,S_EA_EXT_W,S_EA_EXT_HI,S_EA_EXT_LO,S_MOVE_EXT,S_MOVE_ABS_HI,S_MOVE_ABS_LO,S_MOVE_DST_EXT,S_MOVE_DST_ABS_HI,S_MOVE_DST_ABS_LO}state_t;
- state_t state; logic[31:0]dreg[0:7],areg[0:7],usp,ssp; logic[15:0]ir,reset_hi,vector_hi,rte_pc_hi,rts_pc_hi,rte_sr,jump_hi,ea_hi; logic[31:0]exception_pc;logic[15:0]exception_sr;logic[3:0]quick_value;logic irq_pending;logic[31:0]alu_result;logic[32:0]alu_wide;logic alu_x,alu_n,alu_z,alu_v,alu_c;logic[31:0]mem_ea,mem_value,ea_base;logic[2:0]mem_dreg,mem_areg,mem_dest_areg,ea_dest_areg;logic[1:0]mem_update;logic branch_is_bsr,branch_take,jump_is_jsr,jump_is_pc_relative,jump_is_indexed,ea_is_pea,ea_is_absw,ea_is_indexed;logic move_ext_indexed,move_ext_pc_relative,move_ext_absolute,mem_to_areg;logic[31:0]branch_return;logic[31:0]indexed_value;logic[31:0]move_index_value;integer i;
+ state_t state; logic[31:0]dreg[0:7],areg[0:7],usp,ssp; logic[15:0]ir,reset_hi,vector_hi,rte_pc_hi,rts_pc_hi,rte_sr,jump_hi,ea_hi; logic[31:0]exception_pc;logic[15:0]exception_sr;logic[3:0]quick_value;logic irq_pending;logic[31:0]alu_result;logic[32:0]alu_wide;logic alu_x,alu_n,alu_z,alu_v,alu_c;logic[31:0]mem_ea,mem_value,ea_base;logic[2:0]mem_dreg,mem_areg,mem_dest_areg,ea_dest_areg;logic[1:0]mem_update;logic branch_is_bsr,branch_take,jump_is_jsr,jump_is_pc_relative,jump_is_indexed,ea_is_pea,ea_is_absw,ea_is_indexed;logic move_ext_indexed,move_ext_pc_relative,move_ext_absolute,mem_to_areg;logic[31:0]branch_return;logic[31:0]indexed_value;integer i;
  localparam logic[1:0] MEM_NO_UPDATE=0,MEM_POSTINC=1,MEM_PREDEC=2; assign d0=dreg[0];assign a7=areg[7];
  function automatic logic bcc_condition(input logic[3:0]cc);begin case(cc)
   4'h0:bcc_condition=1'b1; 4'h1:bcc_condition=1'b0;
@@ -20,7 +20,7 @@ module amcore_68k_baseline(
   4'he:bcc_condition=!sr[2]&&(sr[3]==sr[1]); 4'hf:bcc_condition=sr[2]||(sr[3]!=sr[1]);
  endcase end endfunction
  always_comb begin
-  indexed_value=data_in[15]?areg[data_in[14:12]]:dreg[data_in[14:12]];move_index_value=data_in[15]?areg[data_in[14:12]]:dreg[data_in[14:12]];
+  indexed_value=data_in[15]?areg[data_in[14:12]]:dreg[data_in[14:12]];
   address=0;data_out=0;read=0;write=0;quick_value=(ir[11:9]==0)?8:{1'b0,ir[11:9]};irq_pending=(irq_level!=0)&&((irq_level==7)||(irq_level>sr[10:8]));alu_result=dreg[ir[2:0]];alu_wide={1'b0,dreg[ir[2:0]]};alu_x=0;alu_n=0;alu_z=0;alu_v=0;alu_c=0;
   if((ir&16'hF1F8)==16'h5080)begin alu_wide={1'b0,dreg[ir[2:0]]}+{29'd0,quick_value};alu_result=alu_wide[31:0];alu_c=alu_wide[32];alu_x=alu_c;alu_v=~dreg[ir[2:0]][31]&alu_result[31];alu_n=alu_result[31];alu_z=(alu_result==0);end
   else if((ir&16'hF1F8)==16'h5180)begin alu_result=dreg[ir[2:0]]-{28'd0,quick_value};alu_c=(dreg[ir[2:0]]<{28'd0,quick_value});alu_x=alu_c;alu_v=dreg[ir[2:0]][31]&~alu_result[31];alu_n=alu_result[31];alu_z=(alu_result==0);end
@@ -92,7 +92,7 @@ module amcore_68k_baseline(
    S_MOVE_DST_EXT:if(ack)begin if(ir[8:6]==7)mem_ea<={{16{data_in[15]}},data_in};else if(move_ext_indexed)mem_ea<=ea_base+{{24{data_in[7]}},data_in[7:0]}+(data_in[11]?indexed_value:{{16{indexed_value[15]}},indexed_value[15:0]});else mem_ea<=ea_base+{{16{data_in[15]}},data_in};pc<=pc+2;state<=S_MEM_WR_HI;end
    S_MOVE_DST_ABS_HI:if(ack)begin ea_hi<=data_in;state<=S_MOVE_DST_ABS_LO;end
    S_MOVE_DST_ABS_LO:if(ack)begin mem_ea<={ea_hi,data_in};pc<=pc+4;state<=S_MEM_WR_HI;end
-   S_MOVE_EXT:if(ack)begin if(move_ext_absolute)mem_ea<={{16{data_in[15]}},data_in};else if(move_ext_indexed)mem_ea<=ea_base+{{24{data_in[7]}},data_in[7:0]}+(data_in[11]?move_index_value:{{16{move_index_value[15]}},move_index_value[15:0]});else mem_ea<=ea_base+{{16{data_in[15]}},data_in};pc<=pc+2;state<=S_MEM_RD_HI;end
+   S_MOVE_EXT:if(ack)begin if(move_ext_absolute)mem_ea<={{16{data_in[15]}},data_in};else if(move_ext_indexed)mem_ea<=ea_base+{{24{data_in[7]}},data_in[7:0]}+(data_in[11]?indexed_value:{{16{indexed_value[15]}},indexed_value[15:0]});else mem_ea<=ea_base+{{16{data_in[15]}},data_in};pc<=pc+2;state<=S_MEM_RD_HI;end
    S_MOVE_ABS_HI:if(ack)begin ea_hi<=data_in;state<=S_MOVE_ABS_LO;end
    S_MOVE_ABS_LO:if(ack)begin mem_ea<={ea_hi,data_in};pc<=pc+4;state<=S_MEM_RD_HI;end
    S_EA_EXT_W:if(ack)begin if(ea_is_absw)branch_return<={{16{data_in[15]}},data_in};else if(ea_is_indexed)branch_return<=ea_base+{{24{data_in[7]}},data_in[7:0]}+(data_in[11]?indexed_value:{{16{indexed_value[15]}},indexed_value[15:0]});else branch_return<=ea_base+{{16{data_in[15]}},data_in};if(ea_is_pea)begin pc<=pc+4;state<=S_BSR_PUSH_LO;end else begin if(ea_is_absw)areg[ea_dest_areg]<={{16{data_in[15]}},data_in};else if(ea_is_indexed)areg[ea_dest_areg]<=ea_base+{{24{data_in[7]}},data_in[7:0]}+(data_in[11]?indexed_value:{{16{indexed_value[15]}},indexed_value[15:0]});else areg[ea_dest_areg]<=ea_base+{{16{data_in[15]}},data_in};pc<=pc+4;state<=S_FETCH;end end
