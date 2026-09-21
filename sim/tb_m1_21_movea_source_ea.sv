@@ -13,7 +13,7 @@ module tb_m1_21_movea_source_ea;
   mem[16'h085]=16'h2668; mem[16'h086]=16'h0020; // d16(A0),A3
   mem[16'h087]=16'h2870; mem[16'h088]=16'h1804; // d8(A0,D1.L),A4
   mem[16'h089]=16'h2A7A; mem[16'h08A]=16'h00EC; // d16(PC),A5 -> 0x200
-  mem[16'h08B]=16'h2C7B; mem[16'h08C]=16'h18E8; // d8(PC,D1.L),A6 -> 0x200
+  mem[16'h08B]=16'h2C7B; mem[16'h08C]=16'h18E4; // d8(PC,D1.L),A6 -> 0x200
   mem[16'h08D]=16'h60FE;
   mem[16'h100]=16'h1111; mem[16'h101]=16'h2222;
   mem[16'h108]=16'h3333; mem[16'h109]=16'h4444;
