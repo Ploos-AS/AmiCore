@@ -5,6 +5,7 @@ module tb_m1_21_movea_source_ea;
  amcore_68k_baseline dut(.*);
  always_comb begin ack=read||write; data_in=mem[address[9:1]]; end
  always_ff @(posedge clk) if(write) mem[address[9:1]]<=data_out;
+ always_ff @(posedge clk) if(dut.state==dut.S_MOVE_EXT && ack) $display("TRACE MOVE_EXT pc=%h ir=%h ext=%h base=%h idx=%h mem_ea_next=%h",pc,dut.ir,data_in,dut.ea_base,dut.move_index_value,dut.ea_base+{{24{data_in[7]}},data_in[7:0]}+(data_in[11]?dut.move_index_value:{{16{dut.move_index_value[15]}},dut.move_index_value[15:0]}));
  initial begin
   for(cycles=0;cycles<512;cycles=cycles+1) mem[cycles]=0;
   mem[0]=16'h0000; mem[1]=16'h03F0; mem[2]=16'h0000; mem[3]=16'h0100;
