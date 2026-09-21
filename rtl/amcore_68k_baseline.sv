@@ -22,8 +22,8 @@ module amcore_68k_baseline(
  always_comb begin
   indexed_value=data_in[15]?areg[data_in[14:12]]:dreg[data_in[14:12]];
   address=0;data_out=0;read=0;write=0;quick_value=(ir[11:9]==0)?8:{1'b0,ir[11:9]};irq_pending=(irq_level!=0)&&((irq_level==7)||(irq_level>sr[10:8]));alu_result=dreg[ir[2:0]];alu_wide={1'b0,dreg[ir[2:0]]};alu_x=0;alu_n=0;alu_z=0;alu_v=0;alu_c=0;
-  if((ir&16'hF1F8)==16'h5080)begin alu_wide={1'b0,dreg[ir[2:0]]}+{29'd0,quick_value};alu_result=alu_wide[31:0];alu_c=alu_wide[32];alu_x=alu_c;alu_v=~dreg[ir[2:0]][31]&alu_result[31];alu_n=alu_result[31];alu_z=(alu_result==0);end
-  else if((ir&16'hF1F8)==16'h5180)begin alu_result=dreg[ir[2:0]]-{28'd0,quick_value};alu_c=(dreg[ir[2:0]]<{28'd0,quick_value});alu_x=alu_c;alu_v=dreg[ir[2:0]][31]&~alu_result[31];alu_n=alu_result[31];alu_z=(alu_result==0);end
+  if((ir&16'hF1F8)==16'h5080)begin alu_wide={1'b0,dreg[ir[2:0]]}+{29'd0,quick_value};alu_result=alu_wide[31:0];alu_c=alu_wide[32];alu_x=alu_wide[32];alu_v=~dreg[ir[2:0]][31]&alu_wide[31];alu_n=alu_wide[31];alu_z=(alu_wide[31:0]==0);end
+  else if((ir&16'hF1F8)==16'h5180)begin alu_result=dreg[ir[2:0]]-{28'd0,quick_value};alu_c=(dreg[ir[2:0]]<{28'd0,quick_value});alu_x=(dreg[ir[2:0]]<{28'd0,quick_value});alu_v=dreg[ir[2:0]][31]&~(dreg[ir[2:0]]-{28'd0,quick_value})[31];alu_n=(dreg[ir[2:0]]-{28'd0,quick_value})[31];alu_z=((dreg[ir[2:0]]-{28'd0,quick_value})==0);end
   case(state)
    S_RESET_SSP_HI:begin address=0;read=1;end S_RESET_SSP_LO:begin address=2;read=1;end S_RESET_PC_HI:begin address=4;read=1;end S_RESET_PC_LO:begin address=6;read=1;end S_FETCH:if(!irq_pending)begin address=pc;read=1;end S_IMM_SR,S_BRANCH_EXT,S_DBCC_EXT,S_JUMP_EXT_W,S_JUMP_EXT_HI,S_EA_EXT_W,S_EA_EXT_HI,S_MOVE_EXT,S_MOVE_ABS_HI,S_MOVE_DST_EXT,S_MOVE_DST_ABS_HI:begin address=pc+2;read=1;end S_JUMP_EXT_LO,S_EA_EXT_LO,S_MOVE_ABS_LO,S_MOVE_DST_ABS_LO:begin address=pc+4;read=1;end
    S_BSR_PUSH_LO:begin address=areg[7]-2;data_out=branch_return[15:0];write=1;end S_BSR_PUSH_HI:begin address=areg[7]-2;data_out=branch_return[31:16];write=1;end S_RTS_POP_HI,S_RTS_POP_LO:begin address=areg[7];read=1;end
