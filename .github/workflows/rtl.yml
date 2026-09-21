@@ -17,7 +17,7 @@ jobs:
       - name: Run M1 deterministic simulation
         run: vvp /tmp/amcore-m1.vvp
       - name: Compile and run 68000 baseline
-        run: iverilog -g2012 -s tb_68k_baseline -o /tmp/amcore-68k.vvp rtl/amcore_68k_baseline.sv sim/tb_68k_baseline.sv && vvp /tmp/amcore-68k.vvp
+        run: iverilog -g2012 -s tb_68k_baseline -o /tmp/amcore-68k.vvp rtl/amcore_68k_baseline.sv sim/tb_68k_baseline.sv && timeout 30s vvp /tmp/amcore-68k.vvp
       - name: Compile and run M1.2 CPU extension
         run: iverilog -g2012 -s tb_m1_2_cpu -o /tmp/amcore-m1-2.vvp rtl/amcore_68k_baseline.sv sim/tb_m1_2_cpu.sv && vvp /tmp/amcore-m1-2.vvp
       - name: Compile and run M1.3 exception entry

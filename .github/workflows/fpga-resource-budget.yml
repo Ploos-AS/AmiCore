@@ -1,0 +1,50 @@
+name: FPGA resource budget
+
+on:
+  push:
+    paths:
+      - 'rtl/**'
+      - '.github/workflows/fpga-resource-budget.yml'
+  pull_request:
+    paths:
+      - 'rtl/**'
+      - '.github/workflows/fpga-resource-budget.yml'
+  workflow_dispatch:
+
+jobs:
+  ecp5-resource-budget:
+    runs-on: ubuntu-latest
+    container: hdlc/impl:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Synthesize current AmiCore RTL for ECP5
+        shell: bash
+        run: |
+          mkdir -p build/fpga
+          yosys -p 'read_verilog -sv rtl/*.sv; hierarchy -check -top amcore_68k_baseline; synth_ecp5 -top amcore_68k_baseline -json build/fpga/amicore.json; stat' \
+            | tee build/fpga/yosys-stat.txt
+
+      - name: Check 45K minimum target
+        shell: bash
+        run: |
+          nextpnr-ecp5 --um5g-45k --package CABGA381 \
+            --json build/fpga/amicore.json \
+            --textcfg build/fpga/amicore-45k.config \
+            --lpf-allow-unconstrained \
+            --report build/fpga/amicore-45k.json
+
+      - name: Check 85K developer target
+        shell: bash
+        run: |
+          nextpnr-ecp5 --um5g-85k --package CABGA381 \
+            --json build/fpga/amicore.json \
+            --textcfg build/fpga/amicore-85k.config \
+            --lpf-allow-unconstrained \
+            --report build/fpga/amicore-85k.json
+
+      - name: Upload resource reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: amicore-ecp5-resource-budget
+          path: build/fpga/
