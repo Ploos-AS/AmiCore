@@ -17,9 +17,13 @@ module tb_68k_baseline;
 
     always #5 clk = ~clk;
 
+    // Use continuous acknowledge. Making ack combinationally depend on the
+    // DUT's read/write outputs creates an unnecessary zero-time feedback path
+    // through the core's combinational bus logic under Icarus.
+    assign ack = 1'b1;
+
     always_comb begin
         data_in = 16'h0000;
-        ack = read | write;
         if (read) begin
             case (address)
                 32'h00000000: data_in = 16'h0000;
