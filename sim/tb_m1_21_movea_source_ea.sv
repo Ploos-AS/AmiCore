@@ -5,7 +5,6 @@ module tb_m1_21_movea_source_ea;
  amcore_68k_baseline dut(.*);
  always_comb begin ack=read||write; data_in=mem[address[9:1]]; end
  always_ff @(posedge clk) if(write) mem[address[9:1]]<=data_out;
- always_ff @(posedge clk) if(dut.state==dut.S_MOVE_EXT && ack) $display("TRACE MOVE_EXT pc=%h ir=%h ext=%h base=%h idx=%h mem_ea_next=%h",pc,dut.ir,data_in,dut.ea_base,dut.move_index_value,dut.ea_base+{{24{data_in[7]}},data_in[7:0]}+(data_in[11]?dut.move_index_value:{{16{dut.move_index_value[15]}},dut.move_index_value[15:0]}));
  initial begin
   for(cycles=0;cycles<512;cycles=cycles+1) mem[cycles]=0;
   mem[0]=16'h0000; mem[1]=16'h03F0; mem[2]=16'h0000; mem[3]=16'h0100;
@@ -14,9 +13,10 @@ module tb_m1_21_movea_source_ea;
   mem[16'h085]=16'h2668; mem[16'h086]=16'h0020; // d16(A0),A3
   mem[16'h087]=16'h2870; mem[16'h088]=16'h1804; // d8(A0,D1.L),A4
   mem[16'h089]=16'h2A7A; mem[16'h08A]=16'h00EC; // d16(PC),A5 -> 0x200
-  mem[16'h08B]=16'h2C7B; mem[16'h08C]=16'h18E4; // d8(PC,D1.L),A6 -> 0x200
+  mem[16'h08B]=16'h2C7B; mem[16'h08C]=16'h1874; // d8(PC,D1.L),A6 -> 0x200
   mem[16'h08D]=16'h60FE;
   mem[16'h100]=16'h1111; mem[16'h101]=16'h2222;
+  mem[16'h0C8]=16'h1111; mem[16'h0C9]=16'h2222;
   mem[16'h108]=16'h3333; mem[16'h109]=16'h4444;
   mem[16'h120]=16'h5555; mem[16'h121]=16'h6666;
   mem[16'h114]=16'h7777; mem[16'h115]=16'h8888;
