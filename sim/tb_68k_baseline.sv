@@ -44,11 +44,28 @@ module tb_68k_baseline;
         repeat (2) @(posedge clk);
         reset_n = 1'b1;
 
-        wait (d0 == 32'h00000005);
-        wait (pc == 32'h00000016);
-        #1;
-        if (halted) $fatal(1, "FAIL: core halted unexpectedly");
-        $display("PASS: 68000 baseline RESET/MOVEQ/BRA/NOP");
-        $finish;
+        // Bound the smoke test in simulated cycles rather than waiting
+        // indefinitely for architectural state. This also makes failures
+        // report the state that was actually reached.
+        begin : baseline_watchdog
+            integer cycles;
+            logic saw_moveq;
+            logic saw_branch_target;
+            saw_moveq = 1'b0;
+            saw_branch_target = 1'b0;
+            for (cycles = 0; cycles < 100; cycles = cycles + 1) begin
+                @(posedge clk);
+                #1;
+                if (d0 == 32'h00000005) saw_moveq = 1'b1;
+                if (pc == 32'h00000016) saw_branch_target = 1'b1;
+                if (halted) $fatal(1, "FAIL: core halted unexpectedly at pc=%08x", pc);
+                if (saw_moveq && saw_branch_target) begin
+                    $display("PASS: 68000 baseline RESET/MOVEQ/BRA/NOP");
+                    $finish;
+                end
+            end
+            $fatal(1, "FAIL: baseline did not converge: pc=%08x d0=%08x moveq=%0d branch=%0d",
+                   pc, d0, saw_moveq, saw_branch_target);
+        end
     end
 endmodule
